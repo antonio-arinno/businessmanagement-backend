@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * Created by aarinopu on 08/01/2020.
  */
 
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 @RestController
 @RequestMapping("/api")
 public class InvoiceRestController {

@@ -20,6 +20,7 @@ import java.util.Map;
  * Created by aarinopu on 27/01/2020.
  */
 
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 @RestController
 @RequestMapping("/api")
 public class UserModelRestController {
