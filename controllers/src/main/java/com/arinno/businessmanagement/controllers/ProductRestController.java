@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Created by aarinopu on 22/01/2020.
  */
 
-@CrossOrigin(origins = {"http://localhost:4200", "*"})
+@CrossOrigin(origins = {"https://businessmanagement-7b334.web.app", "http://localhost:4200", "*"})
 @RestController
 @RequestMapping("/api")
 public class ProductRestController {
