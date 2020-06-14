@@ -1,1 +1,1 @@
-web: java -jar .\controllers\target\controllers-1.0-SNAPSHOT.jar
+web: java -jar ./controllers/target/controllers-1.0-SNAPSHOT.jar
