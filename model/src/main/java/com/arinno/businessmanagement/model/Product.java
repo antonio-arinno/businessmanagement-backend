@@ -12,8 +12,10 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name="products",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"company_id" , "code"})})
+@Table(name="products", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"company_id" , "code"}),
+        @UniqueConstraint(columnNames = {"company_id" , "description"})})
+
 public class Product implements Serializable {
 
     @Id
@@ -21,7 +23,7 @@ public class Product implements Serializable {
     private Long id;
 
     @NotNull
-    private Long code;
+    private String code;
 
     private String description;
 
@@ -50,11 +52,11 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public Long getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(Long code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

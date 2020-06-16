@@ -122,7 +122,7 @@ public class InvoiceRestController {
 
         response.put("title", "Nueva factura");
         response.put("message", "La factura ha sido creada con éxito!");
-        response.put("product", newInvoice);
+        response.put("invoice", newInvoice);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
     }

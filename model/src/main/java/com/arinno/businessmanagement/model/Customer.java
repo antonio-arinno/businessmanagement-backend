@@ -15,7 +15,6 @@ import java.util.List;
  */
 
 @Entity
-
 @Table(name="customers", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"company_id" , "code"}),
         @UniqueConstraint(columnNames = {"company_id" , "name"})})
@@ -25,7 +24,6 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @NotNull
     private Long code;
@@ -44,7 +42,8 @@ public class Customer implements Serializable {
     private Company company;
 
     @JsonIgnoreProperties({"customer", "hibernateLazyInitializer", "handler"})
-    @OneToMany(fetch = FetchType.LAZY, mappedBy ="customer", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy ="customer")
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy ="customer", cascade = CascadeType.ALL)
     private List<Invoice> invoices;
 
     public Customer() {

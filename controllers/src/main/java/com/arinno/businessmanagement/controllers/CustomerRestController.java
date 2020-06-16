@@ -70,7 +70,8 @@ public class CustomerRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("message", "El cliente eliminado con éxito!");
+        response.put("title", "Cliente eliminado");
+        response.put("message", "Cliente eliminado con éxito!");
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 

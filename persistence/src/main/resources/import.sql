@@ -1,7 +1,7 @@
-INSERT INTO companies (name) VALUES('Company 1');
+INSERT INTO companies (name) VALUES('ORTO COCA');
 INSERT INTO companies (name) VALUES('Company 2');
 
-INSERT INTO users (username, password, enabled, company_id, name, last_name, email) VALUES('UserModel 1', '$2a$10$C3Uln5uqnzx/GswADURJGOIdBqYrly9731fnwKDaUdBkt/M3qvtLq', 1, 1, 'Antonio', 'Ariño', 'antonio.arinno@gmail.com');
+INSERT INTO users (username, password, enabled, company_id, name, last_name, email) VALUES('jmccorto@gmail.com', '$2a$10$C3Uln5uqnzx/GswADURJGOIdBqYrly9731fnwKDaUdBkt/M3qvtLq', 1, 1, 'Juan Carlos', 'Coca', 'jmccorto@gmail.com');
 INSERT INTO users (username, password, enabled, company_id, name, last_name, email) VALUES('UserModel 2', '$2a$10$RmdEsvEfhI7Rcm9f/uZXPebZVCcPC7ZXZwV51efAvMAp1rIaRAfPK', 1, 2, 'Nombre', 'Apellido', 'correo@gmail.com');
 
 INSERT INTO roles (name) VALUES('ROLE_ADMIN');
