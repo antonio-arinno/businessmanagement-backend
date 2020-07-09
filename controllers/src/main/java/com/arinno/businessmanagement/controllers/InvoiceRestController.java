@@ -5,6 +5,10 @@ import com.arinno.businessmanagement.services.ICustomerService;
 import com.arinno.businessmanagement.services.IInvoiceService;
 import com.arinno.businessmanagement.services.IProductService;
 import com.arinno.businessmanagement.services.IUserModelService;
+import com.arinno.businessmanagement.util.EmailBody;
+import com.arinno.businessmanagement.util.IEmailPort;
+import com.arinno.businessmanagement.util.IGeneratePdfReport;
+import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -14,7 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +47,9 @@ public class InvoiceRestController {
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private IEmailPort emailPort;
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/invoices/{id}")
@@ -185,6 +195,38 @@ public class InvoiceRestController {
         return customerService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());
     }
 
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/invoices/email/{id}")
+    public ResponseEntity<?> SendMail (@PathVariable Long id,  Authentication authentication) throws MessagingException, IOException, DocumentException {
+
+        ResponseEntity<?> responseEntity = null;
+        responseEntity = getInvoiceOrErr(id, authentication);
+
+        if(responseEntity.getStatusCode()!=HttpStatus.OK){
+            return responseEntity;
+        }
+
+        Map<String, Object> response = new HashMap<>();
+
+        Invoice invoice = (Invoice) responseEntity.getBody();
+
+        EmailBody emailBody = new EmailBody();
+        emailBody.setEmail("antonio.arinno@gmail.com");
+        emailBody.setSubject("prueba");
+        emailBody.setContent("Content");
+
+        try{
+            emailPort.sendEmail(emailBody, invoice);
+        } catch (Exception e){
+            response.put("error", "No se ha podido enviar el email");
+            response.put("message", e.getMessage());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+
+        }
+
+        response.put("message", "Email enviado con éxito!");
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
 
 
     private ResponseEntity<?> getInvoiceOrErr(Long id, Authentication authentication) {
@@ -197,13 +239,14 @@ public class InvoiceRestController {
         try {
             invoice = invoiceService.findByIdAndCompany(id, company);
         } catch(DataAccessException e) {
-            response.put("mensaje", "Error al realizar la consulta en la base de datos");
-            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            response.put("error", "Error al realizar la consulta en la base de datos");
+            response.put("message", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if(invoice == null) {
-            response.put("mensaje", "El cliente ID: ".concat(id.toString().concat(" no existe en la base de datos!")));
+            response.put("error", HttpStatus.NOT_FOUND);
+            response.put("message", "La factura ID: ".concat(id.toString().concat(" no existe en la base de datos!")));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
         }
 
