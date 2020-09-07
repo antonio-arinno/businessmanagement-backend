@@ -22,6 +22,14 @@ public class Company implements Serializable {
     @Column(unique=true, length=20)
     private String name;
 
+    private String address;
+
+    private String phone;
+
+    private String fax;
+
+    private String web;
+
     public Long getId() {
         return id;
     }
@@ -38,5 +46,48 @@ public class Company implements Serializable {
         this.name = name;
     }
 
+    public String getAddress() {
+        return address;
+    }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getFax() {
+        return fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    public String getWeb() {
+        return web;
+    }
+
+    public void setWeb(String web) {
+        this.web = web;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                ", fax='" + fax + '\'' +
+                ", web='" + web + '\'' +
+                '}';
+    }
 }

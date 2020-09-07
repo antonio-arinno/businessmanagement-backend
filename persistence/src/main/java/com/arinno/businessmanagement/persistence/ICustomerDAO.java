@@ -17,4 +17,9 @@ public interface ICustomerDAO extends CrudRepository<Customer, Long> {
     public List<Customer> findByCompany(Company company);
 
     public Customer findByCodeAndCompany(Long code, Company company);
+
+    List<Customer> findByNameContainingIgnoreCaseAndCompany(String term, Company company);
+
+    List<Customer> findByCodeContainingIgnoreCaseAndCompany(String term, Company company);
+
 }

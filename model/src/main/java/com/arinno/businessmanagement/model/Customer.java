@@ -26,7 +26,7 @@ public class Customer implements Serializable {
     private Long id;
 
     @NotNull
-    private Long code;
+    private String code;
 
     @NotEmpty
     private String name;
@@ -41,9 +41,8 @@ public class Customer implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
-    @JsonIgnoreProperties({"customer", "hibernateLazyInitializer", "handler"})
-    @OneToMany(fetch = FetchType.LAZY, mappedBy ="customer")
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy ="customer", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value={"customer", "hibernateLazyInitializer", "handler"},allowSetters = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy ="customer", cascade = CascadeType.ALL)
     private List<Invoice> invoices;
 
     public Customer() {
@@ -58,11 +57,11 @@ public class Customer implements Serializable {
         this.id = id;
     }
 
-    public Long getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(Long code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

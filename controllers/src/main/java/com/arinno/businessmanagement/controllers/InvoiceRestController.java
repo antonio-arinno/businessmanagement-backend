@@ -1,10 +1,7 @@
 package com.arinno.businessmanagement.controllers;
 
 import com.arinno.businessmanagement.model.*;
-import com.arinno.businessmanagement.services.ICustomerService;
-import com.arinno.businessmanagement.services.IInvoiceService;
-import com.arinno.businessmanagement.services.IProductService;
-import com.arinno.businessmanagement.services.IUserModelService;
+import com.arinno.businessmanagement.services.*;
 import com.arinno.businessmanagement.util.EmailBody;
 import com.arinno.businessmanagement.util.IEmailPort;
 import com.arinno.businessmanagement.util.IGeneratePdfReport;
@@ -47,6 +44,9 @@ public class InvoiceRestController {
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private IOrderService orderService;
 
     @Autowired
     private IEmailPort emailPort;
@@ -228,6 +228,39 @@ public class InvoiceRestController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/invoices/generate/{id}&{id2}")
+    public ResponseEntity<?> generate (@PathVariable Long id, @PathVariable Long id2,  Authentication authentication){
+
+        List<Order> orders = null;
+
+        List<Customer> customers = orderService.findCustomerDistinctByInvoiceIsNullAndCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+
+        Map<String, Object> response = new HashMap<>();
+
+        for (Customer customer : customers) {
+            System.out.println(customer.getName());
+            orders = orderService.findByInvoiceIsNullAndCustomer(customer);
+            Invoice invoice = new Invoice();
+            invoice.setCustomer(customer);
+            invoice.setCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+            invoice.setItems(orders);
+
+            try {
+                invoiceService.save(invoice);
+
+            } catch(DataAccessException e) {
+                response.put("error", "Error al realizar el insert en la base de datos");
+                response.put("message", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        }
+        response.put("message", "Facturas generadas con éxito!");
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+
+    }
 
     private ResponseEntity<?> getInvoiceOrErr(Long id, Authentication authentication) {
 

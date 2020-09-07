@@ -2,7 +2,6 @@ package com.arinno.businessmanagement.controllers;
 
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
-import com.arinno.businessmanagement.model.UserModel;
 import com.arinno.businessmanagement.services.ICustomerService;
 import com.arinno.businessmanagement.services.IUserModelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +38,9 @@ public class CustomerRestController {
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/customers")
     public List<Customer> getCustomers(Authentication authentication){
+        List<Customer> customers = customerService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());;
         return customerService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());
-  //      return customerService.findAll();
+
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})

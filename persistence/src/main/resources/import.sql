@@ -1,4 +1,4 @@
-INSERT INTO companies (name) VALUES('ORTO COCA');
+INSERT INTO companies (name, address, phone, fax, web) VALUES('ORTO COCA','Avenida xxxxx, xx, xx', '234 232 232', '333 444 444', 'ortococa@ortococa.com');
 INSERT INTO companies (name) VALUES('Company 2');
 
 INSERT INTO users (username, password, enabled, company_id, name, last_name, email) VALUES('jmccorto@gmail.com', '$2a$10$C3Uln5uqnzx/GswADURJGOIdBqYrly9731fnwKDaUdBkt/M3qvtLq', 1, 1, 'Juan Carlos', 'Coca', 'jmccorto@gmail.com');
@@ -25,9 +25,4 @@ INSERT INTO products (code, create_at, description, price, company_id) VALUES (1
 INSERT INTO products (code, create_at, description, price, company_id) VALUES (2, NOW(),'producto 3', 300, 1);
 INSERT INTO products (code, create_at, description, price, company_id) VALUES (2, NOW(),'producto 4', 250, 2);
 
-INSERT INTO invoices (company_id, number, observation, customer_id, create_at) VALUES(1, 1, 'Factura equipos de oficina', 1, NOW());
-INSERT INTO invoices_items (price, quantity, invoice_id, product_id) VALUES(100, 8, 1, 1);
-
-INSERT INTO invoices (company_id, number, observation, customer_id, create_at) VALUES(2, 1, 'Factura equipos de oficina 2', 2, NOW());
-INSERT INTO invoices_items (price, quantity, invoice_id, product_id) VALUES(100, 5, 2, 2);
 

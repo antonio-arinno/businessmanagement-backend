@@ -4,19 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by aarinopu on 08/01/2020.
- */
-
 @Entity
-@Table(name="invoices",
+@Table(name="orders",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"company_id" , "number"})})
-public class Invoice implements Serializable {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +27,17 @@ public class Invoice implements Serializable {
     private Date createAt;
 
     @NotNull
-    @JsonIgnoreProperties(value={"invoices", "hibernateLazyInitializer", "handler"}, allowSetters=true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    @JsonIgnoreProperties(value={"hibernateLazyInitializer", "handler"}, allowSetters=true)
     @ManyToOne(fetch=FetchType.LAZY)
     private Customer customer;
+
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    @JsonIgnoreProperties(value={"orders", "hibernateLazyInitializer", "handler"}, allowSetters=true)
+    @ManyToOne(fetch=FetchType.LAZY)
+    private Invoice invoice;
+
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
@@ -42,13 +45,12 @@ public class Invoice implements Serializable {
     private Company company;
 
     @NotNull
-    @JsonIgnoreProperties(value={"customer", "invoice", "hibernateLazyInitializer", "handler"},allowSetters = true)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "invoice_id")
-    private List<Order> items;
+    @JoinColumn(name = "order_id")
+    private List<OrderItem> items;
 
-
-    public Invoice() {
+    public Order() {
         this.items = new ArrayList<>();
     }
 
@@ -97,11 +99,19 @@ public class Invoice implements Serializable {
         this.customer = customer;
     }
 
-    public List<Order> getItems() {
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
+
+    public List<OrderItem> getItems() {
         return items;
     }
 
-    public void setItems(List<Order> items) {
+    public void setItems(List<OrderItem> items) {
         this.items = items;
     }
 
@@ -115,21 +125,21 @@ public class Invoice implements Serializable {
 
     public Double getTotal(){
         Double total = 0.00;
-        for(Order item: items){
- //           total += item.getAmount();
-            total += 1;
+        for(OrderItem item: items){
+            total += item.getAmount();
         }
         return total;
     }
 
     @Override
     public String toString() {
-        return "Invoice{" +
+        return "Order{" +
                 "id=" + id +
                 ", number=" + number +
                 ", observation='" + observation + '\'' +
                 ", createAt=" + createAt +
                 ", customer=" + customer +
+                ", invoice=" + invoice +
                 ", company=" + company +
                 ", items=" + items +
                 '}';

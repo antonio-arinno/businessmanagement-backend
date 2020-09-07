@@ -55,8 +55,25 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Customer> findByCompany(Company company) {
         return customerDAO.findByCompany(company);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Customer> findByNameContainingIgnoreCaseAndCompany(String term, Company company) {
+        return customerDAO.findByNameContainingIgnoreCaseAndCompany(term, company);
+    }
+
+    @Override
+    public List<Customer> findByCodeContainingIgnoreCaseAndCompany(String term, Company company) {
+        return customerDAO.findByCodeContainingIgnoreCaseAndCompany(term, company);
+    }
+
+    @Override
+    public void saveAll(List<Customer> customers) {
+        customerDAO.saveAll(customers);
     }
 
 /*

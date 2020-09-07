@@ -1,18 +1,14 @@
 package com.arinno.businessmanagement.model;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-
-/**
- * Created by aarinopu on 08/01/2020.
- */
 
 @Entity
-@Table(name="invoices_items")
-public class InvoiceItem implements Serializable {
+@Table(name="orders_items")
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -65,7 +61,7 @@ public class InvoiceItem implements Serializable {
 
     @Override
     public String toString() {
-        return "InvoiceItem{" +
+        return "OrderItem{" +
                 "id=" + id +
                 ", quantity=" + quantity +
                 ", price=" + price +

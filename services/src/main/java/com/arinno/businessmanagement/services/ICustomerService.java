@@ -22,6 +22,14 @@ public interface ICustomerService {
     public Customer save(Customer customer);
 
     public List<Customer> findByCompany(Company company);
+
+    List<Customer> findByNameContainingIgnoreCaseAndCompany(String term, Company company);
+
+    List<Customer> findByCodeContainingIgnoreCaseAndCompany(String term, Company company);
+
+    public void saveAll(List<Customer> customers);
+
+
 /*
     public Invoice findInvoiceById(Long id);
 
