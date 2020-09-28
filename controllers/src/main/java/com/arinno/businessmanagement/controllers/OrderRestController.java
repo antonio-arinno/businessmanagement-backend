@@ -80,7 +80,8 @@ public class OrderRestController {
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/load-customer-code/{term}")
     public List<Customer> loadCustomerCode(@PathVariable String term, Authentication authentication){
-        return customerService.findByCodeContainingIgnoreCaseAndCompany(term, userModelService.findByUsername(authentication.getName()).getCompany() );
+
+        return customerService.findByCodeStartingWithIgnoreCaseAndCompany(term, userModelService.findByUsername(authentication.getName()).getCompany());
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})

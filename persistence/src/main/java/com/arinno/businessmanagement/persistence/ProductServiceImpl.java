@@ -1,6 +1,7 @@
 package com.arinno.businessmanagement.persistence;
 
 import com.arinno.businessmanagement.model.Company;
+import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
 import com.arinno.businessmanagement.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,12 @@ public class ProductServiceImpl implements IProductService {
     @Transactional(readOnly = true)
     public List<Product> findByDescriptionContainingIgnoreCaseAndCompany(String term, Company company) {
         return productDAO.findByDescriptionContainingIgnoreCaseAndCompany(term, company);
+    }
+
+    @Override
+    public void saveAll(List<Product> products) {
+        productDAO.saveAll(products);
+
     }
 
 

@@ -3,9 +3,12 @@ package com.arinno.businessmanagement.controllers;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.services.ICustomerService;
-import com.arinno.businessmanagement.services.IUserModelService;
+import com.arinno.businessmanagement.util.IUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -13,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-//import java.util.ArrayList;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -33,14 +35,19 @@ public class CustomerRestController {
     private ICustomerService customerService;
 
     @Autowired
-    private IUserModelService userModelService;
+    private IUtil util;
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/customers")
     public List<Customer> getCustomers(Authentication authentication){
-        List<Customer> customers = customerService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());;
-        return customerService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+        return customerService.findByCompany(util.getCompany(authentication));
+    }
 
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/customers/page/{page}")
+    public Page<Customer> getCustomers(@PathVariable Integer page, Authentication authentication){
+        Pageable pageable = PageRequest.of(page, 5);
+        return customerService.findByCompany(pageable, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
@@ -90,7 +97,7 @@ public class CustomerRestController {
 
         Map<String, Object> response = new HashMap<>();
         Customer  newCustomer = null;
-        customer.setCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+        customer.setCompany(util.getCompany(authentication));
         try {
             newCustomer = customerService.save(customer);
         } catch(DataAccessException e) {
@@ -148,7 +155,7 @@ public class CustomerRestController {
         Map<String, Object> response = new HashMap<>();
 
         Customer customer = null;
-        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
+        Company company = util.getCompany(authentication);
 
         try {
             customer = customerService.findByIdAndCompany(id, company);

@@ -63,57 +63,33 @@ public class GeneratePdfReport implements IGeneratePdfReport {
         initializeFonts();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            docWriter = PdfWriter.getInstance(doc, out);
-            doc.open();
-            PdfContentByte cb = docWriter.getDirectContent();
+        docWriter = PdfWriter.getInstance(doc, out);
+        doc.open();
+        PdfContentByte cb = docWriter.getDirectContent();
 
+        boolean beginPage = true;
+        int y = 0;
 
-            boolean beginPage = true;
-            int y = 0;
-
-/*
-            for (OrderItem orderItem : order.getItems()){
-                if(beginPage){
-                    beginPage = false;
-                    generateLayout(doc, cb);
-                    generateHeader(order, cb);
-                    y = 515;
-                }
-                generateDetail(orderItem, cb, y);
-                y = y - 15;
-                if(y < 50){
-                    printPageNumber(cb);
-                    doc.newPage();
-                    beginPage = true;
-                }
+        for (OrderItem orderItem : order.getItems()){
+            if(beginPage){
+                beginPage = false;
+                generateLayout(doc, cb);
+                generateHeader(order, cb);
+                y = 515;
             }
-
-
- */
-
-
-
-            OrderItem orderItem = new OrderItem();
-            for(int i=0; i < 99; i++ ){
-                if(beginPage){
-                    beginPage = false;
-                    generateLayout(doc, cb);
-                    generateHeader(order, cb);
-                    y = 515;
-                }
-                generateDetail(orderItem, cb, y);
-                y = y - 15;
-                if(y < 145){
-                    printPageNumber(cb);
-                    doc.newPage();
-                    beginPage = true;
-                }
+            generateDetail(orderItem, cb, y);
+            y = y - 15;
+            if(y < 145){
+                printPageNumber(cb);
+                doc.newPage();
+                beginPage = true;
             }
+        }
 
         generateFooter(cb);
 
-            printPageNumber(cb);
-            doc.close();
+        printPageNumber(cb);
+        doc.close();
 
         return new ByteArrayInputStream(out.toByteArray());
 
@@ -135,8 +111,6 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             cb.lineTo(480,660);
             cb.stroke();
 
-
-
             // Invoice Header box Text Headings
             createHeadings(cb,422,643,"Account No.");
             createHeadings(cb,422,623,"Order No.");
@@ -146,27 +120,29 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             cb.rectangle(20,150,550,400);
             cb.moveTo(20,530);
             cb.lineTo(570,530);
-            cb.moveTo(50,150);
-            cb.lineTo(50,550);
-            cb.moveTo(150,150);
-            cb.lineTo(150,550);
 
-            cb.moveTo(350,150);
-            cb.lineTo(350,550);
+            cb.moveTo(90,150);
+            cb.lineTo(90,550);
 
+            cb.moveTo(138,150);//150
+            cb.lineTo(138,550);//150
 
-            cb.moveTo(430,150);
-            cb.lineTo(430,550);
+            cb.moveTo(380,150);
+            cb.lineTo(380,550);
+
+            cb.moveTo(445,150);
+            cb.lineTo(445,550);
+
             cb.moveTo(500,150);
             cb.lineTo(500,550);
             cb.stroke();
 
             // Invoice Detail box Text Headings
             createHeadings(cb,22,533,"Ref.");
-            createHeadings(cb,52,533,"Lote");
-            createHeadings(cb,152,533,"Concept");
-            createHeadings(cb,352,533,"Price");
-            createHeadings(cb,432,533,"Qty");
+            createHeadings(cb,92,533,"Lote");
+            createHeadings(cb,142,533,"Concept");
+            createHeadings(cb,380,533,"Price");
+            createHeadings(cb,446,533,"Qty");
             createHeadings(cb,502,533,"Total");
 
 
@@ -196,13 +172,12 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             createHeadings(cb,400,705,"City, State - ZipCode");
             createHeadings(cb,400,690,"Country");
 
-
-
-            createHeadings(cb,100,650, order.getCustomer().getName());
-            createHeadings(cb,100,635,"Address Line 1");
-            createHeadings(cb,100,620,"Address Line 2");
-            createHeadings(cb,100,605,"City, State - ZipCode");
-            createHeadings(cb,100,590,"Country");
+            createHeadings(cb,50,650, order.getCustomer().getName());
+            createHeadings(cb,50,635, order.getCustomer().getAddress());
+            createHeadings(cb,50,620, order.getCustomer().getTown() +", "+
+                                                    order.getCustomer().getStateProvince() +" - "+
+                                                    order.getCustomer().getPostalCode());
+            createHeadings(cb,50,605,"Country");
 
             createHeadings(cb,482,643, order.getCustomer().getCode());
             createHeadings(cb,482,623, String.valueOf(order.getNumber()));
@@ -219,17 +194,16 @@ public class GeneratePdfReport implements IGeneratePdfReport {
     private void generateDetail(OrderItem orderItem, PdfContentByte cb, int y)  {
         DecimalFormat df = new DecimalFormat("0.00");
 
-        createContent(cb,48,y, "orderItem.getProduct().getCode()",PdfContentByte.ALIGN_RIGHT);
-        createContent(cb,52,y, "ITEM" + String.valueOf(1),PdfContentByte.ALIGN_LEFT);
-        createContent(cb,152,y, "orderItem.getProduct().getDescription()",PdfContentByte.ALIGN_LEFT);
-        createContent(cb,420,y, "df.format(orderItem.getPrice())",PdfContentByte.ALIGN_RIGHT);
-        createContent(cb,498,y, "df.format(orderItem.getQuantity())",PdfContentByte.ALIGN_RIGHT);
-        createContent(cb,568,y, "df.format(orderItem.getAmount())",PdfContentByte.ALIGN_RIGHT);
+        createContent(cb,83,y, orderItem.getProduct().getCode(),PdfContentByte.ALIGN_RIGHT);
+//        createContent(cb,87,y, "ITEM" + String.valueOf(1),PdfContentByte.ALIGN_LEFT);
+        createContent(cb,142,y, orderItem.getProduct().getDescription(),PdfContentByte.ALIGN_LEFT);
+        createContent(cb,440,y, df.format(orderItem.getPrice()),PdfContentByte.ALIGN_RIGHT);
+        createContent(cb,498,y, String.valueOf(orderItem.getQuantity()),PdfContentByte.ALIGN_RIGHT);
+        createContent(cb,568,y, df.format(orderItem.getAmount()),PdfContentByte.ALIGN_RIGHT);
 
     }
 
     private void createHeadings(PdfContentByte cb, float x, float y, String text){
-
 
         cb.beginText();
         cb.setFontAndSize(bfBold, 8);

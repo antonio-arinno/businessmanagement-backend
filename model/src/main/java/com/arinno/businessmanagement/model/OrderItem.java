@@ -18,6 +18,8 @@ public class OrderItem {
 
     private Double price;
 
+    private Double discount;
+
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,6 +49,14 @@ public class OrderItem {
         this.price = price;
     }
 
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
     public Product getProduct() {
         return product;
     }
@@ -56,16 +66,8 @@ public class OrderItem {
     }
 
     public Double getAmount(){
-        return quantity.doubleValue()*price.doubleValue();
+        return (price.doubleValue() -
+                (price.doubleValue() * (discount.doubleValue() /100))) * quantity.doubleValue();
     }
 
-    @Override
-    public String toString() {
-        return "OrderItem{" +
-                "id=" + id +
-                ", quantity=" + quantity +
-                ", price=" + price +
-                ", product=" + product +
-                '}';
-    }
 }

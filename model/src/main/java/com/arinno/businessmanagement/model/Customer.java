@@ -16,8 +16,8 @@ import java.util.List;
 
 @Entity
 @Table(name="customers", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"company_id" , "code"}),
-        @UniqueConstraint(columnNames = {"company_id" , "name"})})
+        @UniqueConstraint(columnNames = {"company_id" , "code"})})
+ //       ,@UniqueConstraint(columnNames = {"company_id" , "name"})})
 
 public class Customer implements Serializable {
 
@@ -28,8 +28,41 @@ public class Customer implements Serializable {
     @NotNull
     private String code;
 
+    @NotNull
+    private String taxId;
+
     @NotEmpty
     private String name;
+
+    @NotNull
+    private String address;
+
+    private String typeStreet;
+
+    private String Street;
+
+    private String numberKm;
+
+    private String country;
+
+    private String stateProvince;
+
+    private String town;
+
+    @NotNull
+    private String postalCode;
+
+    private String building;
+
+    private String staircase;
+
+    private String floor;
+
+    private String door;
+
+    private String telephone;
+
+    private String email;
 
     @NotNull
     @Column(name="create_at")
@@ -87,6 +120,127 @@ public class Customer implements Serializable {
 
     public void setInvoices(List<Invoice> invoices) {
         this.invoices = invoices;
+    }
+
+
+    public String getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(String taxId) {
+        this.taxId = taxId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTypeStreet() {
+        return typeStreet;
+    }
+
+    public void setTypeStreet(String typeStreet) {
+        this.typeStreet = typeStreet;
+    }
+
+    public String getStreet() {
+        return Street;
+    }
+
+    public void setStreet(String street) {
+        Street = street;
+    }
+
+    public String getNumberKm() {
+        return numberKm;
+    }
+
+    public void setNumberKm(String numberKm) {
+        this.numberKm = numberKm;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getStateProvince() {
+        return stateProvince;
+    }
+
+    public void setStateProvince(String stateProvince) {
+        this.stateProvince = stateProvince;
+    }
+
+    public String getTown() {
+        return town;
+    }
+
+    public void setTown(String town) {
+        this.town = town;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(String building) {
+        this.building = building;
+    }
+
+    public String getStaircase() {
+        return staircase;
+    }
+
+    public void setStaircase(String staircase) {
+        this.staircase = staircase;
+    }
+
+    public String getFloor() {
+        return floor;
+    }
+
+    public void setFloor(String floor) {
+        this.floor = floor;
+    }
+
+    public String getDoor() {
+        return door;
+    }
+
+    public void setDoor(String door) {
+        this.door = door;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setCompany(Company company) {

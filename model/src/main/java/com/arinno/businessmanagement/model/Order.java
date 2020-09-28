@@ -22,19 +22,18 @@ public class Order {
 
     private String observation;
 
+    @NotNull
     @Column(name="create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-//    @JsonIgnoreProperties(value={"hibernateLazyInitializer", "handler"}, allowSetters=true)
     @ManyToOne(fetch=FetchType.LAZY)
     private Customer customer;
 
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-//    @JsonIgnoreProperties(value={"orders", "hibernateLazyInitializer", "handler"}, allowSetters=true)
     @ManyToOne(fetch=FetchType.LAZY)
     private Invoice invoice;
 
@@ -53,12 +52,12 @@ public class Order {
     public Order() {
         this.items = new ArrayList<>();
     }
-
+/*
     @PrePersist
     public void prePersist(){
         this.createAt = new Date();
     }
-
+*/
     public Long getId() {
         return id;
     }

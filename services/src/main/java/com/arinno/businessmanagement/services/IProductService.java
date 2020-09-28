@@ -23,5 +23,6 @@ public interface IProductService {
 
     public List<Product> findByDescriptionContainingIgnoreCaseAndCompany(String term, Company company);
 
+    public void saveAll(List<Product> products);
 
 }

@@ -5,6 +5,8 @@ import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Invoice;
 import com.arinno.businessmanagement.services.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,12 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<Customer> findByCompany(Pageable pageable, Company company) {
+        return customerDAO.findByCompany(pageable, company);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Customer> findByCompany(Company company) {
         return customerDAO.findByCompany(company);
     }
@@ -72,52 +80,15 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
+    public List<Customer> findByCodeStartingWithIgnoreCaseAndCompany(String term, Company company) {
+        return customerDAO.findByCodeStartingWithIgnoreCaseAndCompany(term, company);
+    }
+
+    @Override
     public void saveAll(List<Customer> customers) {
         customerDAO.saveAll(customers);
     }
 
-/*
-    @Override
-    @Transactional(readOnly = true)
-    public Invoice findInvoiceById(Long id) {
-        return invoiceDAO.findById(id).orElse(null);
-    }
 
-    @Override
-    @Transactional
-    public Invoice saveInvoice(Invoice invoice) {
-        Long number = invoiceDAO.nextInvoiceNumber(invoice.getCompany());
-        if(number!=null){
-            invoice.setNumber(number);
-        }else {
-            invoice.setNumber((long) 1);
-        }
-        return invoiceDAO.save(invoice);
-    }
-
-    @Override
-    @Transactional
-    public void deleteInvoiceById(Long id) {
-        invoiceDAO.deleteById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Invoice findInvoiceByIdAndCompany(Long id, Company company) {
-        return invoiceDAO.findByIdAndCompany(id, company);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Invoice> findInvoicesByCompany(Company company) {
-        return invoiceDAO.findByCompany(company);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Customer findByCodeAndCompany(Long code, Company company) {
-        return customerDAO.findByCodeAndCompany(code, company);
-    }
-*/
 
 }

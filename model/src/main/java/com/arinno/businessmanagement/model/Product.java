@@ -13,8 +13,8 @@ import java.util.Date;
 
 @Entity
 @Table(name="products", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"company_id" , "code"}),
-        @UniqueConstraint(columnNames = {"company_id" , "description"})})
+        @UniqueConstraint(columnNames = {"company_id" , "code"})})
+ //       ,@UniqueConstraint(columnNames = {"company_id" , "description"})})
 
 public class Product implements Serializable {
 

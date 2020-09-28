@@ -14,12 +14,6 @@ INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);
 INSERT INTO users_roles (user_id, role_id) VALUES (2, 2);
 INSERT INTO users_roles (user_id, role_id) VALUES (3, 1);
 
-INSERT INTO customers (code, create_at, name, company_id) VALUES(1, now(), 'Cliente 1', 1);
-INSERT INTO customers (code, create_at, name, company_id) VALUES(2, now(), 'Cliente 2', 2);
-INSERT INTO customers (code, create_at, name, company_id) VALUES(3, now(), 'Cliente 3', 1);
-INSERT INTO customers (code, create_at, name, company_id) VALUES(4, now(), 'Cliente 4', 2);
-
-
 INSERT INTO products (code, create_at, description, price, company_id) VALUES (1, NOW(),'producto 1', 100, 1);
 INSERT INTO products (code, create_at, description, price, company_id) VALUES (1, NOW(),'producto 2', 100, 2);
 INSERT INTO products (code, create_at, description, price, company_id) VALUES (2, NOW(),'producto 3', 300, 1);
