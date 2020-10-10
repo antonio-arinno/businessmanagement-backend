@@ -14,11 +14,7 @@ public interface IGeneratePdfReport {
 
     public void generateInvoice(Invoice invoice, OutputStream outputStream) throws Exception;
 
-    public void generateOrder(Order order, OutputStream outputStream) throws Exception;
-
     public ByteArrayInputStream generateOrder(Order order) throws DocumentException;
-
-    public void writePdf(OutputStream outputStream) throws Exception;
 
     public ByteArrayInputStream ordersPDFReport(List<Order> orders);
 

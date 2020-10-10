@@ -3,6 +3,8 @@ package com.arinno.businessmanagement.services;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ import java.util.List;
 public interface IProductService {
 
     Product findByIdAndCompany(Long id, Company company);
+
+    public Page<Product> findByCompany(Pageable pageable, Company company);
 
     void delete(Long id);
 

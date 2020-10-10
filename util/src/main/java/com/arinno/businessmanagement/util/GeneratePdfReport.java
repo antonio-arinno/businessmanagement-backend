@@ -43,20 +43,6 @@ public class GeneratePdfReport implements IGeneratePdfReport {
     }
 
     @Override
-    public void generateOrder(Order order, OutputStream outputStream) throws Exception {
-        System.out.println("generateOrder");
-        Document document = new Document();
-        PdfWriter writer = PdfWriter.getInstance(document, outputStream);
-        document.open();
-
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("LEFT--------L"), 50, 800, 0);
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("RIGHT------R"), 300, 800,0);
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("LEFT--------1"), 50, 750, 0);
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("RIGHT------2"), 300, 750,0);
-        document.close();
-    }
-
-    @Override
     public ByteArrayInputStream generateOrder(Order order) throws DocumentException {
         Document doc = new Document();
         PdfWriter docWriter = null;
@@ -264,69 +250,6 @@ public class GeneratePdfReport implements IGeneratePdfReport {
 
     }
 
-
-
-/*
-    @Override
-    public ByteArrayInputStream generateOrder2(Order order) {
-        Document document = new Document();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try{
-            PdfWriter.getInstance(document, out);
-            document.open();
-
-            com.itextpdf.text.Font font = FontFactory.getFont(FontFactory.COURIER, 14, BaseColor.BLACK);
-            Paragraph para = new Paragraph(order.getCompany().getName(), font);
-            para.setAlignment(Element.ALIGN_LEFT);
-            document.add(para);
-            para = new Paragraph(order.getCompany().getAddress(), font);
-            para.setAlignment(Element.ALIGN_LEFT);
-            document.add(para);
-            para = new Paragraph(order.getCompany().getPhone(), font);
-            para.setAlignment(Element.ALIGN_LEFT);
-            document.add(para);
-            para = new Paragraph(order.getCompany().getFax(), font);
-            para.setAlignment(Element.ALIGN_LEFT);
-            document.add(para);
-            para = new Paragraph(order.getCompany().getWeb(), font);
-            para.setAlignment(Element.ALIGN_LEFT);
-            document.add(para);
-
-
-            document.add(Chunk.NEWLINE);
-            PdfPTable table = new PdfPTable(2);
-            Stream.of("Title", "Description").forEach(headerTitle -> {
-                PdfPCell header = new PdfPCell();
-                com.itextpdf.text.Font headFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
-                header.setBackgroundColor(BaseColor.LIGHT_GRAY);
-                header.setHorizontalAlignment(Element.ALIGN_CENTER);
-                header.setBorderWidth(1);
-                header.setPhrase(new Phrase(headerTitle, headFont));
-                table.addCell(header);
-            });
-
-
-            document.add(table);
-            document.close();
-
-        } catch (DocumentException e){
-            e.printStackTrace();
-        }
-        return new ByteArrayInputStream(out.toByteArray());
-
-    }
-*/
-
-    public void writePdf(OutputStream outputStream) throws Exception {
-        Document document = new Document();
-        PdfWriter.getInstance(document, outputStream);
-        document.open();
-        Paragraph paragraph = new Paragraph();
-        paragraph.add(new Chunk("hello!"));
-        document.add(paragraph);
-        document.close();
-    }
-
     @Override
     public ByteArrayInputStream ordersPDFReport(List<Order> orders) {
         Document document = new Document();
@@ -366,71 +289,5 @@ public class GeneratePdfReport implements IGeneratePdfReport {
         }
         return new ByteArrayInputStream(out.toByteArray());
     }
-
-    private void pdfCabeceras() throws IOException, DocumentException{
-
-        Document document = new Document();
-
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("iTextHelloWorld.pdf"));
-
-        document.open();
-
-        Rectangle rect = new Rectangle(36, 36, 290, 806);
-
-        float center = (rect.getLeft() + rect.getRight()) / 2;
-
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("LEFT--------L"), 50, 800, 0);
-
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("RIGHT------R"), 300, 800,0);
-
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("LEFT--------1"), 50, 750, 0);
-
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("RIGHT------2"), 300, 750,0);
-
-        document.close();
-
-    }
-
-    private void pdfColumn() throws IOException, DocumentException {
-
-        Document document = new Document();
-
-        PdfWriter write = PdfWriter.getInstance(document, new FileOutputStream("iTextHelloWorld.pdf"));
-
-        document.open();
-
-        ColumnText ct = new ColumnText(write.getDirectContent());
-        BufferedReader br = new BufferedReader(new FileReader("text.txt"));
-        String line;
-        Paragraph p;
-        Font normal = new Font(Font.FontFamily.TIMES_ROMAN, 12);
-        Font bold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
-        boolean title = true;
-        while ((line = br.readLine()) != null) {
-            p = new Paragraph(line, title ? bold : normal);
-            p.setAlignment(Element.ALIGN_JUSTIFIED);
-            title = line.isEmpty();
-            ct.addElement(p);
-        }
-        Rectangle[] columns = {
-                new Rectangle(36, 36, 290, 806), new Rectangle(305, 36, 559, 806)
-        };
-
-        int c = 0;
-        int status = ColumnText.START_COLUMN;
-        while (ColumnText.hasMoreText(status)) {
-            ct.setSimpleColumn(columns[c]);
-            status = ct.go();
-            if (++c == 2) {
-                document.newPage();
-                c = 0;
-            }
-        }
-
-        document.close();
-
-
-    }
-
 
 }

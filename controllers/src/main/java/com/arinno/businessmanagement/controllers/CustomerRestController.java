@@ -89,7 +89,7 @@ public class CustomerRestController {
     public ResponseEntity<?> create(@Valid @RequestBody Customer customer, BindingResult result, Authentication authentication){
 
         ResponseEntity<?> responseEntity = null;
-        responseEntity = getErrRequestBody(result);
+        responseEntity = util.getErrRequestBody(result); //getErrRequestBody(result);
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
@@ -117,7 +117,7 @@ public class CustomerRestController {
     public ResponseEntity<?> update(@Valid @RequestBody Customer customer, BindingResult result, @PathVariable Long id, Authentication authentication){
 
         ResponseEntity<?> responseEntity = null;
-        responseEntity = getErrRequestBody(result);
+        responseEntity = util.getErrRequestBody(result);
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
@@ -173,25 +173,6 @@ public class CustomerRestController {
 
         return new ResponseEntity<Customer>(customer, HttpStatus.OK);
     }
-
-    private ResponseEntity<?> getErrRequestBody(BindingResult result) {
-        Map<String, Object> response = new HashMap<>();
-
-        if(result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .filter(err -> !"company".equals(err.getField()))
-                    .map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
-                    .collect(Collectors.toList());
-            if(errors.size() != 0) {
-                response.put("errors", errors);
-                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
-    }
-
 
 
 }

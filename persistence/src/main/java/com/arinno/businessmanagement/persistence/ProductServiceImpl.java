@@ -5,6 +5,8 @@ import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
 import com.arinno.businessmanagement.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,12 @@ public class ProductServiceImpl implements IProductService {
     @Transactional(readOnly = true)
     public Product findByIdAndCompany(Long id, Company company) {
         return productDAO.findByIdAndCompany(id, company);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> findByCompany(Pageable pageable, Company company) {
+        return productDAO.findByCompany(pageable, company);
     }
 
     @Override

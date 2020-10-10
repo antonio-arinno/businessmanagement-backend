@@ -5,8 +5,12 @@ import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
 import com.arinno.businessmanagement.services.IProductService;
 import com.arinno.businessmanagement.services.IUserModelService;
+import com.arinno.businessmanagement.util.IUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -34,13 +38,20 @@ public class ProductRestController {
     private IProductService productService;
 
     @Autowired
-    private IUserModelService userModelService;
+    private IUtil util;
 
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/products")
     public List<Product> getProducts(Authentication authentication){
-         return productService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+         return productService.findByCompany(util.getCompany(authentication));
+    }
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/products/page/{page}")
+    public Page<Product> getProducts(@PathVariable Integer page, Authentication authentication){
+        Pageable pageable = PageRequest.of(page, 5);
+        return productService.findByCompany(pageable, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
@@ -78,7 +89,7 @@ public class ProductRestController {
     public ResponseEntity<?> create(@Valid @RequestBody Product product, BindingResult result, Authentication authentication) {
 
         ResponseEntity<?> responseEntity = null;
-        responseEntity = getErrRequestBody(result);
+        responseEntity = util.getErrRequestBody(result);
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
@@ -86,7 +97,7 @@ public class ProductRestController {
 
         Map<String, Object> response = new HashMap<>();
         Product newProduct = null;
-        product.setCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+        product.setCompany(util.getCompany(authentication));
         try {
             newProduct = productService.save(product);
         } catch(DataAccessException e) {
@@ -108,7 +119,7 @@ public class ProductRestController {
     public ResponseEntity<?> update(@Valid @RequestBody Product product, BindingResult result, @PathVariable Long id, Authentication authentication){
 
         ResponseEntity<?> responseEntity = null;
-        responseEntity = getErrRequestBody(result);
+        responseEntity = util.getErrRequestBody(result);
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
@@ -147,7 +158,7 @@ public class ProductRestController {
 
         Map<String, Object> response = new HashMap<>();
         Product product = null;
-        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
+        Company company = util.getCompany(authentication);
 
         try{
             product = productService.findByIdAndCompany(id, company);
@@ -165,7 +176,7 @@ public class ProductRestController {
         return new ResponseEntity<Product>(product, HttpStatus.OK);
 
     }
-
+/*
     private ResponseEntity<?> getErrRequestBody(BindingResult result) {
         Map<String, Object> response = new HashMap<>();
 
@@ -183,6 +194,8 @@ public class ProductRestController {
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
+
+ */
 }
 
 

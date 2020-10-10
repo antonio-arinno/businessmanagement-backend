@@ -7,6 +7,7 @@ import com.arinno.businessmanagement.model.Product;
 import com.arinno.businessmanagement.services.ICustomerService;
 import com.arinno.businessmanagement.services.IProductService;
 import com.arinno.businessmanagement.services.IUserModelService;
+import com.arinno.businessmanagement.util.IUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -42,13 +43,13 @@ public class ExternalDataRestController {
     private IProductService productService;
 
     @Autowired
-    private IUserModelService userModelService;
+    private IUtil util;
 
 
     @PostMapping("/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, Authentication authentication){
 
-        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
+        Company company = util.getCompany(authentication);
 
         Map<String, Object> response = new HashMap<>();
 
@@ -71,7 +72,7 @@ public class ExternalDataRestController {
     @PostMapping("/upload/product")
     public ResponseEntity<?> uploadProduct(@RequestParam("file") MultipartFile file, Authentication authentication){
 
-        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
+        Company company = util.getCompany(authentication);
         Map<String, Object> response = new HashMap<>();
 
         try {

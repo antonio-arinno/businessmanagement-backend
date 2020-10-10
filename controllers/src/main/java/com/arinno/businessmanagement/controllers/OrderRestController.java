@@ -1,13 +1,11 @@
 package com.arinno.businessmanagement.controllers;
 
-
 import com.arinno.businessmanagement.model.*;
 import com.arinno.businessmanagement.services.ICustomerService;
 import com.arinno.businessmanagement.services.IOrderService;
 import com.arinno.businessmanagement.services.IProductService;
-import com.arinno.businessmanagement.services.IUserModelService;
-import com.arinno.businessmanagement.util.EmailBody;
 import com.arinno.businessmanagement.util.IGeneratePdfReport;
+import com.arinno.businessmanagement.util.IUtil;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -20,16 +18,13 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
-import javax.mail.util.ByteArrayDataSource;
 import javax.validation.Valid;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 @CrossOrigin(origins = {"https://businessmanagement-7b334.web.app", "http://localhost:4200", "*"})
 @RestController
@@ -43,7 +38,7 @@ public class OrderRestController {
     private ICustomerService customerService;
 
     @Autowired
-    private IUserModelService userModelService;
+    private IUtil util;
 
     @Autowired
     private IProductService productService;
@@ -57,31 +52,29 @@ public class OrderRestController {
         return getOrderOrErr(id, authentication);
     }
 
-
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders")
     public List<Order> getOrders(Authentication authentication){
-        return orderService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());
+        return orderService.findByCompany(util.getCompany(authentication));
     }
-
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/load-product/{term}")
     public List<Product> loadProduct(@PathVariable String term, Authentication authentication){
-        return productService.findByDescriptionContainingIgnoreCaseAndCompany(term, userModelService.findByUsername(authentication.getName()).getCompany() );
+        return productService.findByDescriptionContainingIgnoreCaseAndCompany(term, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/load-customer/{term}")
     public List<Customer> loadCustomer(@PathVariable String term, Authentication authentication){
-        return customerService.findByNameContainingIgnoreCaseAndCompany(term, userModelService.findByUsername(authentication.getName()).getCompany() );
+        return customerService.findByNameContainingIgnoreCaseAndCompany(term, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/load-customer-code/{term}")
     public List<Customer> loadCustomerCode(@PathVariable String term, Authentication authentication){
 
-        return customerService.findByCodeStartingWithIgnoreCaseAndCompany(term, userModelService.findByUsername(authentication.getName()).getCompany());
+        return customerService.findByCodeStartingWithIgnoreCaseAndCompany(term, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
@@ -112,7 +105,7 @@ public class OrderRestController {
 
         Map<String, Object> response = new HashMap<>();
         Order  newOrder = null;
-        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
+        Company company = util.getCompany(authentication);
         order.setCompany(company);
 
         try {
@@ -129,7 +122,6 @@ public class OrderRestController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
     }
-
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @PutMapping("/orders/{id}")
@@ -214,109 +206,6 @@ public class OrderRestController {
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/orders/pdf2/{id}")
-    public ResponseEntity<?> PDF2 (@PathVariable Long id,  Authentication authentication) {
-
-        ResponseEntity<?> responseEntity = null;
-        responseEntity = getOrderOrErr(id, authentication);
-
-        if(responseEntity.getStatusCode()!=HttpStatus.OK){
-            return responseEntity;
-        }
-
-        Map<String, Object> response = new HashMap<>();
-
-        Order order = (Order) responseEntity.getBody();
-
-
-
-        response.put("message", "PDF ok!");
-
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Invoice inv = new Invoice();
-        try {
-            generatePdfReport.generateInvoice(inv, outputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put("message", "PDF");
-            response.put("error", e.getMessage());
-        }
-        byte[] bytes = outputStream.toByteArray();
-
-        File file = new File("demo.pdf");
-
-        OutputStream os = null;
-
-        try {
-
-            os = new FileOutputStream(file);
-            os.write(bytes);
-            System.out.println("Write bytes to file.");
-            printContent(file);
-            os.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        ByteArrayInputStream nStream = new ByteArrayInputStream( bytes );
-
-
-        InputStreamResource resource = null;
-        try {
-            resource = new InputStreamResource(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("PDF10");
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
-                // Content-Type
-                .contentType(MediaType.APPLICATION_PDF)
-                // Contet-Length
-                .contentLength(file.length()) //
-                .body(resource);
-/*
-
-        System.out.println("PDF2");
-
-
-
-
-
-        DataSource dataSource = new ByteArrayDataSource(bytes, "application/pdf");
-
- //       helper.addAttachment("Invoice.pdf", dataSource);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-
-
-
-        response.put("pdf", resource);
-        System.out.println("PDF3");
-        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK); InputStreamResource
-*/
-
-    }
-
-
-    @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/orders/pdf3/{id}")
-    public ResponseEntity<InputStreamResource> PDF3 (@PathVariable Long id,  Authentication authentication) {
-
-        List<Order> orders = orderService.findByCompany(userModelService.findByUsername(authentication.getName()).getCompany());
-
-        ByteArrayInputStream bais = generatePdfReport.ordersPDFReport(orders);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=pdf.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(new InputStreamResource(bais));
-    }
-
-    @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/pdf/{id}")
     public ResponseEntity<InputStreamResource> PDF (@PathVariable Long id,  Authentication authentication) throws DocumentException {
 
@@ -338,44 +227,6 @@ public class OrderRestController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(bais));
 
-
-
-    }
-
-
-    public static void printContent(File file) throws Exception {
-        System.out.println("Print File Content");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-
-        String line = null;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-
-        br.close();
-    }
-
-
-
-
-
-    private ResponseEntity<?> getErrRequestBody(BindingResult result) {
-        Map<String, Object> response = new HashMap<>();
-
-        if(result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .filter(err -> !"company".equals(err.getField()) && !"number".equals(err.getField()) )
-                    .map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
-                    .collect(Collectors.toList());
-            if(errors.size() != 0) {
-                response.put("errors", errors);
-                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
-
     }
 
     private ResponseEntity<?> getOrderOrErr(Long id, Authentication authentication) {
@@ -383,8 +234,7 @@ public class OrderRestController {
         Map<String, Object> response = new HashMap<>();
 
         Order order = null;
-        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
-
+        Company company = util.getCompany(authentication);
 
         try {
             order = orderService.findByIdAndCompany(id, company);
@@ -404,6 +254,24 @@ public class OrderRestController {
 
     }
 
+    private ResponseEntity<?> getErrRequestBody(BindingResult result) {
+        Map<String, Object> response = new HashMap<>();
+
+        if(result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .filter(err -> !"company".equals(err.getField()) && !"number".equals(err.getField()) )
+                    .map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
+                    .collect(Collectors.toList());
+            if(errors.size() != 0) {
+                response.put("errors", errors);
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+
+    }
 
 
 }

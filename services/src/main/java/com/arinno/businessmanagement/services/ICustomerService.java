@@ -14,8 +14,6 @@ public interface ICustomerService {
 
     public List<Customer> findAll();
 
- //   public Page<Customer> findAll(Pageable pageable);
-
     public Customer findByIdAndCompany(Long id, Company company);
 
     public Customer findById(Long id);
