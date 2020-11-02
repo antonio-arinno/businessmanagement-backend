@@ -1,5 +1,6 @@
 package com.arinno.businessmanagement.controllers;
 
+import com.arinno.businessmanagement.model.Address;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.services.ICustomerService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -96,7 +98,8 @@ public class CustomerRestController {
         }
 
         Map<String, Object> response = new HashMap<>();
-        Customer  newCustomer = null;
+        Customer newCustomer = new Customer();
+        newCustomer.setAddress(new Address());
         customer.setCompany(util.getCompany(authentication));
         try {
             newCustomer = customerService.save(customer);

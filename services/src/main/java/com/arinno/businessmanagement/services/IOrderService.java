@@ -3,8 +3,9 @@ package com.arinno.businessmanagement.services;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.awt.*;
 import java.util.List;
 
 public interface IOrderService {
@@ -25,4 +26,5 @@ public interface IOrderService {
 
     List<Order> findByInvoiceIsNullAndCustomer(Customer customer);
 
+    Page<Order> findByCompany(Pageable pageable, Company company);
 }

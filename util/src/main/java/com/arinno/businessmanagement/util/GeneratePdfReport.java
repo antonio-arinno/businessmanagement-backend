@@ -159,10 +159,10 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             createHeadings(cb,400,690,"Country");
 
             createHeadings(cb,50,650, order.getCustomer().getName());
-            createHeadings(cb,50,635, order.getCustomer().getAddress());
-            createHeadings(cb,50,620, order.getCustomer().getTown() +", "+
-                                                    order.getCustomer().getStateProvince() +" - "+
-                                                    order.getCustomer().getPostalCode());
+            createHeadings(cb,50,635, order.getCustomer().getFullAddress());
+            createHeadings(cb,50,620, order.getCustomer().getAddress().getTown() +", "+
+                                                    order.getCustomer().getAddress().getStateProvince() +" - "+
+                                                    order.getCustomer().getAddress().getPostalCode());
             createHeadings(cb,50,605,"Country");
 
             createHeadings(cb,482,643, order.getCustomer().getCode());

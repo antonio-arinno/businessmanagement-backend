@@ -10,6 +10,9 @@ import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,6 +60,24 @@ public class OrderRestController {
     public List<Order> getOrders(Authentication authentication){
         return orderService.findByCompany(util.getCompany(authentication));
     }
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/orders/page/{page}")
+    public Page<Order> getOrders(@PathVariable Integer page, Authentication authentication){
+        Pageable pageable = PageRequest.of(page, 5);
+        return orderService.findByCompany(pageable, util.getCompany(authentication));
+    }
+
+/*
+   @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/customers/page/{page}")
+    public Page<Customer> getCustomers(@PathVariable Integer page, Authentication authentication){
+        Pageable pageable = PageRequest.of(page, 5);
+        return customerService.findByCompany(pageable, util.getCompany(authentication));
+    }
+
+ */
+
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/load-product/{term}")

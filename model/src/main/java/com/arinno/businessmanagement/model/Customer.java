@@ -34,31 +34,11 @@ public class Customer implements Serializable {
     @NotEmpty
     private String name;
 
-    @NotNull
-    private String address;
+//    @NotNull
+    private String fullAddress;
 
-    private String typeStreet;
-
-    private String Street;
-
-    private String numberKm;
-
-    private String country;
-
-    private String stateProvince;
-
-    private String town;
-
-    @NotNull
-    private String postalCode;
-
-    private String building;
-
-    private String staircase;
-
-    private String floor;
-
-    private String door;
+    @Embedded
+    private Address address;
 
     private String telephone;
 
@@ -122,7 +102,6 @@ public class Customer implements Serializable {
         this.invoices = invoices;
     }
 
-
     public String getTaxId() {
         return taxId;
     }
@@ -131,100 +110,20 @@ public class Customer implements Serializable {
         this.taxId = taxId;
     }
 
-    public String getAddress() {
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
+    }
+
+    public com.arinno.businessmanagement.model.Address getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(com.arinno.businessmanagement.model.Address address) {
         this.address = address;
-    }
-
-    public String getTypeStreet() {
-        return typeStreet;
-    }
-
-    public void setTypeStreet(String typeStreet) {
-        this.typeStreet = typeStreet;
-    }
-
-    public String getStreet() {
-        return Street;
-    }
-
-    public void setStreet(String street) {
-        Street = street;
-    }
-
-    public String getNumberKm() {
-        return numberKm;
-    }
-
-    public void setNumberKm(String numberKm) {
-        this.numberKm = numberKm;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getStateProvince() {
-        return stateProvince;
-    }
-
-    public void setStateProvince(String stateProvince) {
-        this.stateProvince = stateProvince;
-    }
-
-    public String getTown() {
-        return town;
-    }
-
-    public void setTown(String town) {
-        this.town = town;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public String getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(String building) {
-        this.building = building;
-    }
-
-    public String getStaircase() {
-        return staircase;
-    }
-
-    public void setStaircase(String staircase) {
-        this.staircase = staircase;
-    }
-
-    public String getFloor() {
-        return floor;
-    }
-
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
-
-    public String getDoor() {
-        return door;
-    }
-
-    public void setDoor(String door) {
-        this.door = door;
     }
 
     public String getTelephone() {
@@ -247,15 +146,5 @@ public class Customer implements Serializable {
         this.company = company;
     }
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", code=" + code +
-                ", name='" + name + '\'' +
-                ", createAt=" + createAt +
-                ", company=" + company +
-                ", invoices=" + invoices +
-                '}';
-    }
+
 }

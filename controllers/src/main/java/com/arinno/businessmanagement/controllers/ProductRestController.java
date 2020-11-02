@@ -40,7 +40,6 @@ public class ProductRestController {
     @Autowired
     private IUtil util;
 
-
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/products")
     public List<Product> getProducts(Authentication authentication){

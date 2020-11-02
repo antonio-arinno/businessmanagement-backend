@@ -6,6 +6,8 @@ import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Order;
 import com.arinno.businessmanagement.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +28,16 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> findByCompany(Company company) {
         return orderDAO.findByCompany(company);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Order> findByCompany(Pageable pageable, Company company) {
+        return orderDAO.findByCompany(pageable, company);
     }
 
     @Override

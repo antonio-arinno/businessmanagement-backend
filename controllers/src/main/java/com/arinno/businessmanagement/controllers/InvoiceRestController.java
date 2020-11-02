@@ -262,6 +262,8 @@ public class InvoiceRestController {
 
     }
 
+
+    
     private ResponseEntity<?> getInvoiceOrErr(Long id, Authentication authentication) {
 
         Map<String, Object> response = new HashMap<>();

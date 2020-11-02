@@ -3,6 +3,8 @@ package com.arinno.businessmanagement.persistence;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -26,4 +28,5 @@ public interface IOrderDAO extends CrudRepository<Order, Long> {
 
     List<Order> findByInvoiceIsNullAndCustomer(Customer customer);
 
+    Page<Order> findByCompany(Pageable pageable, Company company);
 }

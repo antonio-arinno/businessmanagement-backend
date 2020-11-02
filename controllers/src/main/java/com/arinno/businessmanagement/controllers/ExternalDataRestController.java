@@ -1,6 +1,7 @@
 package com.arinno.businessmanagement.controllers;
 
 
+import com.arinno.businessmanagement.model.Address;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
@@ -46,11 +47,10 @@ public class ExternalDataRestController {
     private IUtil util;
 
 
-    @PostMapping("/upload")
+    @PostMapping("/upload/customer")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, Authentication authentication){
 
         Company company = util.getCompany(authentication);
-
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -62,11 +62,6 @@ public class ExternalDataRestController {
         response.put("title", "Upload ok");
         response.put("message", "Fichero subido correctamente");
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
-/*
-        response.put("error", "Error al realizar el insert en la base de datos");
-        response.put("message", "error");
-        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-*/
     }
 
     @PostMapping("/upload/product")
@@ -111,6 +106,8 @@ public class ExternalDataRestController {
                 Customer customer = new Customer();
                 customer.setCompany(company);
                 customer.setCreateAt(new Date());
+                Address address = new Address();
+                customer.setAddress(address);
 
 
                 int cellIdx = 0;
@@ -131,19 +128,19 @@ public class ExternalDataRestController {
                             break;
 
                         case 3:
-                            customer.setAddress(currentCell.getStringCellValue());
+                            customer.setFullAddress(currentCell.getStringCellValue());
                             break;
 
                         case 4:
-                            customer.setStateProvince(currentCell.getStringCellValue());
+                            customer.getAddress().setStateProvince(currentCell.getStringCellValue());
                             break;
 
                         case 5:
-                            customer.setTown(currentCell.getStringCellValue());
+                            customer.getAddress().setTown(currentCell.getStringCellValue());
                             break;
 
                         case 6:
-                            customer.setPostalCode(currentCell.getStringCellValue());
+                            customer.getAddress().setPostalCode(currentCell.getStringCellValue());
                             break;
 
                         case 7:
