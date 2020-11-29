@@ -118,5 +118,17 @@ public class Customer implements Serializable {
         this.company = company;
     }
 
-
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", taxId='" + taxId + '\'' +
+                ", name='" + name + '\'' +
+                ", address=" + address +
+                ", createAt=" + createAt +
+                ", company=" + company +
+                ", invoices=" + invoices +
+                '}';
+    }
 }

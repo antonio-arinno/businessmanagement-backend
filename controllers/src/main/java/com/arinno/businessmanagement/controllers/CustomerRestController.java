@@ -182,7 +182,6 @@ public class CustomerRestController {
     private ResponseEntity<?> getCustomerOrErr (Long id, Authentication authentication) {
 
         Map<String, Object> response = new HashMap<>();
-
         Customer customer = null;
         Company company = util.getCompany(authentication);
 

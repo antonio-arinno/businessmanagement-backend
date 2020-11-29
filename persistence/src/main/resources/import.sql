@@ -1,4 +1,4 @@
-INSERT INTO companies (name, address, phone, fax, web) VALUES('ALTAIR BUCAL','Avenida xxxxx, xx, xx', '234 232 232', '333 444 444', 'ortococa@ortococa.com');
+INSERT INTO companies (name) VALUES('ALTAIR BUCAL');
 INSERT INTO companies (name) VALUES('Company 2');
 
 --NSERT INTO partners (code, name, address, phone, fax, web, company_id) VALUES(1, 'Sevilla','c/ Sevilla, xx, xx', '234 232 232', '333 444 444', 'sevilla@ortococa.com', 1);

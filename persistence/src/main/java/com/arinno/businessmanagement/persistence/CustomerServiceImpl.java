@@ -1,5 +1,6 @@
 package com.arinno.businessmanagement.persistence;
 
+import com.arinno.businessmanagement.model.Address;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Invoice;
@@ -34,7 +35,11 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     @Transactional(readOnly = true)
     public Customer findByIdAndCompany(Long id, Company company) {
-        return customerDAO.findByIdAndCompany(id, company);
+        Customer customer = customerDAO.findByIdAndCompany(id, company);
+        if (customer.getAddress() == null){
+            customer.setAddress(new Address());
+        }
+        return customer;
     }
 
 

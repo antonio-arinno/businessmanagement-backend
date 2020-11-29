@@ -1,5 +1,6 @@
 package com.arinno.businessmanagement.persistence;
 
+import com.arinno.businessmanagement.model.Address;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.services.ICompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,11 @@ public class CompanyServiceImpl implements ICompanyService {
     @Override
     @Transactional(readOnly = true)
     public Company findById(Long id) {
-        return companyDAO.findById(id).orElse(null);
+        Company company = companyDAO.findById(id).orElse(null);
+        if (company.getAddress() == null){
+            company.setAddress(new Address());
+        }
+        return company;
     }
 
     @Override

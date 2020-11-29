@@ -19,7 +19,6 @@ public class Address {
 
     private String town;
 
-    @NotNull
     private String postalCode;
 
     private String building;
