@@ -52,12 +52,7 @@ public class Order {
     public Order() {
         this.items = new ArrayList<>();
     }
-/*
-    @PrePersist
-    public void prePersist(){
-        this.createAt = new Date();
-    }
-*/
+
     public Long getId() {
         return id;
     }
@@ -130,6 +125,45 @@ public class Order {
         return total;
     }
 
+    public Double getTotalWithIva(){
+        Double total = 0.00;
+        for(OrderItem item: items){
+            total += item.getAmountWithIva();
+        }
+        return total;
+    }
+
+    public Double getTotal(IvaType ivaType){
+        Double total = 0.00;
+        for(OrderItem item: items){
+            if(item.getIvaType() == ivaType) {
+                total += item.getAmount();
+            }
+        }
+        return total;
+    }
+
+    public Double getTotalIva(IvaType ivaType){
+        Double total = 0.00;
+        for(OrderItem item: items){
+            if(item.getIvaType() == ivaType) {
+                total += item.getAmountIva();
+            }
+        }
+        return total;
+    }
+
+    public boolean hasIvaType(IvaType ivaType) {
+        Boolean hasIvaType = false;
+        for(OrderItem item: items){
+            if(item.getIvaType() == ivaType) {
+                hasIvaType = true;
+                break;
+            }
+        }
+        return hasIvaType;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -143,4 +177,6 @@ public class Order {
                 ", items=" + items +
                 '}';
     }
+
+
 }

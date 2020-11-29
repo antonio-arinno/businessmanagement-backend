@@ -1,12 +1,10 @@
 package com.arinno.businessmanagement.controllers;
 
 
-import com.arinno.businessmanagement.model.Address;
-import com.arinno.businessmanagement.model.Company;
-import com.arinno.businessmanagement.model.Customer;
-import com.arinno.businessmanagement.model.Product;
+import com.arinno.businessmanagement.model.*;
 import com.arinno.businessmanagement.services.ICustomerService;
 import com.arinno.businessmanagement.services.IProductService;
+import com.arinno.businessmanagement.services.IProviderService;
 import com.arinno.businessmanagement.services.IUserModelService;
 import com.arinno.businessmanagement.util.IUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -44,6 +42,9 @@ public class ExternalDataRestController {
     private IProductService productService;
 
     @Autowired
+    private IProviderService providerService;
+
+    @Autowired
     private IUtil util;
 
 
@@ -68,10 +69,11 @@ public class ExternalDataRestController {
     public ResponseEntity<?> uploadProduct(@RequestParam("file") MultipartFile file, Authentication authentication){
 
         Company company = util.getCompany(authentication);
+        Provider provider = providerService.findByIdAndCompany((long) 1, company);
         Map<String, Object> response = new HashMap<>();
 
         try {
-            productService.saveAll(excelToProducts(file.getInputStream(), company));
+            productService.saveAll(excelToProducts(file.getInputStream(), company, provider));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -128,7 +130,7 @@ public class ExternalDataRestController {
                             break;
 
                         case 3:
-                            customer.setFullAddress(currentCell.getStringCellValue());
+//                            customer.setFullAddress(currentCell.getStringCellValue());
                             break;
 
                         case 4:
@@ -144,11 +146,11 @@ public class ExternalDataRestController {
                             break;
 
                         case 7:
-                            customer.setTelephone(currentCell.getStringCellValue());
+                            customer.getAddress().setTelephone(currentCell.getStringCellValue());
                             break;
 
                         case 8:
-                            customer.setEmail(currentCell.getStringCellValue());
+                            customer.getAddress().setEmail(currentCell.getStringCellValue());
                             break;
 
                         default:
@@ -169,7 +171,7 @@ public class ExternalDataRestController {
         }
     }
 
-    public static List<Product> excelToProducts(InputStream is, Company company) {
+    public static List<Product> excelToProducts(InputStream is, Company company, Provider provider) {
         try {
             Workbook workbook = new XSSFWorkbook(is);
 
@@ -189,10 +191,11 @@ public class ExternalDataRestController {
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
 
-
                 Product product = new Product();
                 product.setCompany(company);
                 product.setCreateAt(new Date());
+                product.setIvaType(IvaType.GENERAL);
+                product.setProvider(provider);
 
 
                 int cellIdx = 0;

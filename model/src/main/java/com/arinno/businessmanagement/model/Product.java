@@ -29,20 +29,33 @@ public class Product implements Serializable {
 
     private Double price;
 
+
+
+
+    @Enumerated(value = EnumType.ORDINAL)
+    private IvaType ivaType;
+
     @Column(name="create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
+
+
+    @NotNull
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Provider provider;
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
+
+
     @PrePersist
     public void prePersist(){
         this.createAt = new Date();
     }
-
 
     public Long getId() {
         return id;
@@ -84,9 +97,28 @@ public class Product implements Serializable {
         this.createAt = createAt;
     }
 
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+
+    public IvaType getIvaType() {
+        return ivaType;
+    }
+
+    public void setIvaType(IvaType ivaType) {
+        this.ivaType = ivaType;
+    }
+
     public void setCompany(Company company) {
         this.company = company;
     }
+
 
     @Override
     public String toString() {

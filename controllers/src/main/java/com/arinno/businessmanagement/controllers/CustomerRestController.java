@@ -18,7 +18,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.Embedded;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +122,9 @@ public class CustomerRestController {
     @PutMapping("/customers/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody Customer customer, BindingResult result, @PathVariable Long id, Authentication authentication){
 
+
+        System.out.print(customer.getAddress().toString());
+
         ResponseEntity<?> responseEntity = null;
         responseEntity = util.getErrRequestBody(result);
 
@@ -138,6 +144,26 @@ public class CustomerRestController {
         currentCustomer.setName(customer.getName());
         currentCustomer.setCode(customer.getCode());
         currentCustomer.setCreateAt(customer.getCreateAt());
+
+        currentCustomer.setTaxId(customer.getTaxId());
+
+        System.out.print(customer.getAddress().toString());
+
+        currentCustomer.getAddress().setTypeStreet(customer.getAddress().getTypeStreet());
+        currentCustomer.getAddress().setStreet(customer.getAddress().getStreet());
+        currentCustomer.getAddress().setNumberKm(customer.getAddress().getNumberKm());
+        currentCustomer.getAddress().setCountry(customer.getAddress().getCountry());
+        currentCustomer.getAddress().setStateProvince(customer.getAddress().getStateProvince());
+        currentCustomer.getAddress().setTown(customer.getAddress().getTown());
+        currentCustomer.getAddress().setPostalCode(customer.getAddress().getPostalCode());
+        currentCustomer.getAddress().setBuilding(customer.getAddress().getBuilding());
+        currentCustomer.getAddress().setStaircase(customer.getAddress().getStaircase());
+        currentCustomer.getAddress().setFloor(customer.getAddress().getFloor());
+        currentCustomer.getAddress().setDoor(customer.getAddress().getDoor());
+        currentCustomer.getAddress().setAdditionalInformation(customer.getAddress().getAdditionalInformation());
+        currentCustomer.getAddress().setTelephone(customer.getAddress().getTelephone());
+        currentCustomer.getAddress().setEmail(customer.getAddress().getEmail());
+
         Customer updateCustomer = null;
         try {
             updateCustomer = customerService.save(currentCustomer);

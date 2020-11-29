@@ -20,6 +20,10 @@ public class OrderItem {
 
     private Double discount;
 
+    private Double iva;
+
+    private IvaType ivaType;
+
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,6 +61,22 @@ public class OrderItem {
         this.discount = discount;
     }
 
+    public Double getIva() {
+        return iva;
+    }
+
+    public void setIva(Double iva) {
+        this.iva = iva;
+    }
+
+    public IvaType getIvaType() {
+        return ivaType;
+    }
+
+    public void setIvaType(IvaType ivaType) {
+        this.ivaType = ivaType;
+    }
+
     public Product getProduct() {
         return product;
     }
@@ -69,5 +89,15 @@ public class OrderItem {
         return (price.doubleValue() -
                 (price.doubleValue() * (discount.doubleValue() /100))) * quantity.doubleValue();
     }
+
+    public Double getAmountWithIva(){
+        return getAmount() + getAmount() * (iva.doubleValue() / 100);
+    }
+
+    public Double getAmountIva(){
+        return getAmount() * (iva.doubleValue() / 100);
+    }
+
+
 
 }

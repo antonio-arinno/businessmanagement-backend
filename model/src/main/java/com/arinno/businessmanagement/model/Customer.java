@@ -34,15 +34,9 @@ public class Customer implements Serializable {
     @NotEmpty
     private String name;
 
-//    @NotNull
-    private String fullAddress;
-
     @Embedded
     private Address address;
 
-    private String telephone;
-
-    private String email;
 
     @NotNull
     @Column(name="create_at")
@@ -110,13 +104,7 @@ public class Customer implements Serializable {
         this.taxId = taxId;
     }
 
-    public String getFullAddress() {
-        return fullAddress;
-    }
 
-    public void setFullAddress(String fullAddress) {
-        this.fullAddress = fullAddress;
-    }
 
     public com.arinno.businessmanagement.model.Address getAddress() {
         return address;
@@ -124,22 +112,6 @@ public class Customer implements Serializable {
 
     public void setAddress(com.arinno.businessmanagement.model.Address address) {
         this.address = address;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public void setCompany(Company company) {

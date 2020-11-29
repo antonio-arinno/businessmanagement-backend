@@ -32,6 +32,12 @@ public class Address {
 
     private String additionalInformation;
 
+    private String telephone;
+
+    private String email;
+
+    private String web;
+
     public String getTypeStreet() {
         return typeStreet;
     }
@@ -45,7 +51,7 @@ public class Address {
     }
 
     public void setStreet(String street) {
-        street = street;
+        this.street = street;
     }
 
     public String getNumberKm() {
@@ -126,5 +132,66 @@ public class Address {
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+    }
+
+    public String getAddressLine_1() {
+        return getValueOrString(this.typeStreet) + " " + getValueOrString(this.street) + ", " + getValueOrString(this.numberKm) + " " + getValueOrString(this.floor) + " " + getValueOrString(this.door);
+    }
+
+    public String getAddressLine_2() {
+        return getValueOrString(this.stateProvince) + ", " + getValueOrString(this.town) +" - " +
+                getValueOrString(this.postalCode);
+    }
+
+
+    public String getAddressLine_3(){
+        return getValueOrString(this.building) + " " + getValueOrString(this.staircase) + " " +
+                getValueOrString(this.additionalInformation);
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getWeb() {
+        return web;
+    }
+
+    public void setWeb(String web) {
+        this.web = web;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "typeStreet='" + typeStreet + '\'' +
+                ", street='" + street + '\'' +
+                ", numberKm='" + numberKm + '\'' +
+                ", country='" + country + '\'' +
+                ", stateProvince='" + stateProvince + '\'' +
+                ", town='" + town + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                ", building='" + building + '\'' +
+                ", staircase='" + staircase + '\'' +
+                ", floor='" + floor + '\'' +
+                ", door='" + door + '\'' +
+                ", additionalInformation='" + additionalInformation + '\'' +
+                '}';
+    }
+
+    private String getValueOrString(String value) {
+        return (value == null) ? "" : value;
     }
 }

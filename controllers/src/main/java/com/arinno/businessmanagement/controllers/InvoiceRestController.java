@@ -7,8 +7,11 @@ import com.arinno.businessmanagement.util.IEmailPort;
 import com.arinno.businessmanagement.util.IGeneratePdfReport;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,6 +54,9 @@ public class InvoiceRestController {
 
     @Autowired
     private IEmailPort emailPort;
+
+    @Autowired
+    private IGeneratePdfReport generatePdfReport;
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/invoices/{id}")
@@ -263,7 +270,29 @@ public class InvoiceRestController {
     }
 
 
-    
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/invoices/pdf/{id}")
+    public ResponseEntity<InputStreamResource> PDF (@PathVariable Long id, Authentication authentication) throws DocumentException {
+
+        ResponseEntity<?> responseEntity = null;
+        responseEntity = getInvoiceOrErr(id, authentication);
+
+        if(responseEntity.getStatusCode()!=HttpStatus.OK){
+            return (ResponseEntity<InputStreamResource>) ResponseEntity.badRequest();
+        }
+
+        Invoice invoice = (Invoice) responseEntity.getBody();
+        ByteArrayInputStream bais = null;
+        bais = generatePdfReport.generateInvoice(invoice);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=invoice.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bais));
+    }
+
     private ResponseEntity<?> getInvoiceOrErr(Long id, Authentication authentication) {
 
         Map<String, Object> response = new HashMap<>();

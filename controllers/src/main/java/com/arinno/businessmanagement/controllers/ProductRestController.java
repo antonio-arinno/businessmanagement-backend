@@ -1,9 +1,8 @@
 package com.arinno.businessmanagement.controllers;
 
-import com.arinno.businessmanagement.model.Company;
-import com.arinno.businessmanagement.model.Customer;
-import com.arinno.businessmanagement.model.Product;
+import com.arinno.businessmanagement.model.*;
 import com.arinno.businessmanagement.services.IProductService;
+import com.arinno.businessmanagement.services.IProviderService;
 import com.arinno.businessmanagement.services.IUserModelService;
 import com.arinno.businessmanagement.util.IUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,9 @@ public class ProductRestController {
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private IProviderService providerService;
 
     @Autowired
     private IUtil util;
@@ -151,6 +153,14 @@ public class ProductRestController {
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
+    }
+
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/products/load-provider-name/{term}")
+    public List<Provider> loadProviderName(@PathVariable String term, Authentication authentication){
+
+        return providerService.findByNameStartingWithIgnoreCaseAndCompany(term, util.getCompany(authentication));
     }
 
     private ResponseEntity<?> getProductOrErr(Long id, Authentication authentication) {

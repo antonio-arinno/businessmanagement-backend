@@ -122,6 +122,42 @@ public class Invoice implements Serializable {
         return total;
     }
 
+    public Double getTotal(IvaType ivaType){
+        Double total = 0.00;
+        for(Order item: items){
+            total += item.getTotal(ivaType);
+        }
+        return total;
+    }
+
+    public Double getTotalIva(IvaType ivaType){
+        Double total = 0.00;
+        for(Order item: items){
+            total += item.getTotalIva(ivaType);
+        }
+        return total;
+    }
+
+    public Double getTotalWithIva(){
+        Double total = 0.00;
+        for(Order item: items){
+            total += item.getTotalWithIva();
+        }
+        return total;
+    }
+
+    public boolean hasIvaType(IvaType ivaType) {
+        Boolean hasIvaType = false;
+        for(Order item: items){
+            if(item.hasIvaType(ivaType)){
+                hasIvaType = true;
+                break;
+            }
+
+        }
+        return hasIvaType;
+    }
+
     @Override
     public String toString() {
         return "Invoice{" +
@@ -134,4 +170,6 @@ public class Invoice implements Serializable {
                 ", items=" + items +
                 '}';
     }
+
+
 }
