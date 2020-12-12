@@ -1,9 +1,9 @@
 package com.arinno.businessmanagement.controllers;
 
-import com.arinno.businessmanagement.model.*;
-import com.arinno.businessmanagement.services.IProductService;
+
+import com.arinno.businessmanagement.model.Company;
+import com.arinno.businessmanagement.model.Provider;
 import com.arinno.businessmanagement.services.IProviderService;
-import com.arinno.businessmanagement.services.IUserModelService;
 import com.arinno.businessmanagement.util.IUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -19,22 +19,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-/**
- * Created by aarinopu on 22/01/2020.
- */
 
 @CrossOrigin(origins = {"https://businessmanagement-7b334.web.app", "http://localhost:4200", "*"})
 @RestController
 @RequestMapping("/api")
-public class ProductRestController {
-
-
-    @Autowired
-    private IProductService productService;
+public class ProviderRestController {
 
     @Autowired
     private IProviderService providerService;
@@ -43,51 +33,45 @@ public class ProductRestController {
     private IUtil util;
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/products")
-    public List<Product> getProducts(Authentication authentication){
-         return productService.findByCompany(util.getCompany(authentication));
-    }
-
-    @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/products/page/{page}")
-    public Page<Product> getProducts(@PathVariable Integer page, Authentication authentication){
+    @GetMapping("/providers/page/{page}")
+    public Page<Provider> getProviders(@PathVariable Integer page, Authentication authentication){
         Pageable pageable = PageRequest.of(page, 5);
-        return productService.findByCompany(pageable, util.getCompany(authentication));
+        return providerService.findByCompany(pageable, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/products/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable Long id, Authentication authentication){
-        return getProductOrErr(id, authentication);
+    @GetMapping("/providers/{id}")
+    public ResponseEntity<?> getProvider(@PathVariable Long id, Authentication authentication){
+        return getProviderOrErr(id, authentication);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("/providers/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id, Authentication authentication){
 
         ResponseEntity<?> responseEntity = null;
-        responseEntity = getProductOrErr(id, authentication);
+        responseEntity = getProviderOrErr(id, authentication);
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
         }
         Map<String, Object> response = new HashMap<>();
         try {
-            productService.delete(id);
+            providerService.delete(id);
         } catch (DataAccessException e) {
             response.put("error", "Error al eliminar el cliente de la base de datos");
             response.put("message", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("title", "Producto eliminado");
-        response.put("message", "Producto eliminado con éxito!");
+        response.put("title", "Provider eliminado");
+        response.put("message", "Provider eliminado con éxito!");
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @PostMapping("/products")
-    public ResponseEntity<?> create(@Valid @RequestBody Product product, BindingResult result, Authentication authentication) {
+    @PostMapping("/providers")
+    public ResponseEntity<?> create(@Valid @RequestBody Provider provider, BindingResult result, Authentication authentication) {
 
         ResponseEntity<?> responseEntity = null;
         responseEntity = util.getErrRequestBody(result);
@@ -97,10 +81,10 @@ public class ProductRestController {
         }
 
         Map<String, Object> response = new HashMap<>();
-        Product newProduct = null;
-        product.setCompany(util.getCompany(authentication));
+        Provider newProvider = null;
+        provider.setCompany(util.getCompany(authentication));
         try {
-            newProduct = productService.save(product);
+            newProvider = providerService.save(provider);
         } catch(DataAccessException e) {
             response.put("error", "Error al realizar el insert en la base de datos");
             response.put("message", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -109,15 +93,14 @@ public class ProductRestController {
 
         response.put("title", "Nuevo producto");
         response.put("message", "El producto ha sido creado con éxito!");
-        response.put("product", newProduct);
+        response.put("product", newProvider);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
     }
 
-
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @PutMapping("/products/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody Product product, BindingResult result, @PathVariable Long id, Authentication authentication){
+    @PutMapping("/providers/{id}")
+    public ResponseEntity<?> update(@Valid @RequestBody Provider provider, BindingResult result, @PathVariable Long id, Authentication authentication){
 
         ResponseEntity<?> responseEntity = null;
         responseEntity = util.getErrRequestBody(result);
@@ -126,7 +109,7 @@ public class ProductRestController {
             return responseEntity;
         }
 
-        responseEntity = this.getProductOrErr(id, authentication);
+        responseEntity = this.getProviderOrErr(id, authentication);
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
@@ -134,89 +117,70 @@ public class ProductRestController {
 
         Map<String, Object> response = new HashMap<>();
 
-        Product currentProduct = (Product) responseEntity.getBody();
-        currentProduct.setDescription(product.getDescription());
-        currentProduct.setPrice(product.getPrice());
-        currentProduct.setCode(product.getCode());
-        currentProduct.setProvider(product.getProvider());
-        Product updateProduct = null;
+        Provider currentProvider = (Provider) responseEntity.getBody();
+        currentProvider.setCode(provider.getCode());
+        currentProvider.setName(provider.getName());
+        currentProvider.setCreateAt(provider.getCreateAt());
+        currentProvider.setAddress(provider.getAddress());
+
+        Provider updateProvider = null;
         try{
-            updateProduct = productService.save(currentProduct);
+            updateProvider = providerService.save(currentProvider);
         } catch (DataAccessException e) {
             response.put("mensaje", "Error al actualizar el producto en la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("title", "Producto actualizado");
-        response.put("message", "El producto ha sido actualizado con éxito!");
-        response.put("product", updateProduct);
+        response.put("title", "Provider actualizado");
+        response.put("message", "El provider ha sido actualizado con éxito!");
+        response.put("product", updateProvider);
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
     }
 
 
-    @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/products/load-provider-name/{term}")
-    public List<Provider> loadProviderName(@PathVariable String term, Authentication authentication){
 
-        return providerService.findByNameStartingWithIgnoreCaseAndCompany(term, util.getCompany(authentication));
-    }
 
-    private ResponseEntity<?> getProductOrErr(Long id, Authentication authentication) {
+    private ResponseEntity<?> getProviderOrErr(Long id, Authentication authentication) {
 
         Map<String, Object> response = new HashMap<>();
-        Product product = null;
+        Provider provider = null;
         Company company = util.getCompany(authentication);
 
         try{
-            product = productService.findByIdAndCompany(id, company);
+            provider = providerService.findByIdAndCompany(id, company);
         } catch(DataAccessException e) {
             response.put("mensaje", "Error al realizar la consulta en la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if(product == null){
-            response.put("mensaje", "El product ID: ".concat(id.toString().concat(" no existe en la base de datos!")));
+        if(provider == null){
+            response.put("mensaje", "El provider ID: ".concat(id.toString().concat(" no existe en la base de datos!")));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<Product>(product, HttpStatus.OK);
+        return new ResponseEntity<Provider>(provider, HttpStatus.OK);
 
     }
-/*
-    private ResponseEntity<?> getErrRequestBody(BindingResult result) {
-        Map<String, Object> response = new HashMap<>();
 
-        if(result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .filter(err -> !"company".equals(err.getField()))
-                    .map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
-                    .collect(Collectors.toList());
-            if(errors.size() != 0) {
-                response.put("errors", errors);
-                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
-    }
 
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

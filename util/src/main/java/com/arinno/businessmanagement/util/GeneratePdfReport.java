@@ -41,6 +41,7 @@ public class GeneratePdfReport implements IGeneratePdfReport {
 
     @Override
     public ByteArrayInputStream generateInvoice(Invoice invoice) throws DocumentException {
+
         Document doc = new Document();
         PdfWriter docWriter = null;
         initializeFonts();

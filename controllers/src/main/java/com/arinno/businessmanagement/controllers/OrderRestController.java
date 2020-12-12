@@ -157,9 +157,11 @@ public class OrderRestController {
 
         responseEntity = this.getOrderOrErr(id, authentication);
 
+
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
         }
+
 
         if (order.getCustomer().getId()==null){
             Map<String, Object> response = new HashMap<>();

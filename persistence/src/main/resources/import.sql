@@ -1,10 +1,7 @@
 INSERT INTO companies (name) VALUES('ALTAIR BUCAL');
 INSERT INTO companies (name) VALUES('Company 2');
 
---NSERT INTO partners (code, name, address, phone, fax, web, company_id) VALUES(1, 'Sevilla','c/ Sevilla, xx, xx', '234 232 232', '333 444 444', 'sevilla@ortococa.com', 1);
-
-INSERT INTO providers (code, name, address, phone, fax, web, company_id) VALUES(1, 'FlexSelect','c/ Sevilla, xx, xx', '234 232 232', '333 444 444', 'sevilla@ortococa.com', 1);
-INSERT INTO providers (code, name, address, phone, fax, web, company_id) VALUES(2, 'Flex Proveedor 2','c/ Sevilla, xx, xx', '234 232 232', '333 444 444', 'sevilla@ortococa.com', 1);
+--INSERT INTO providers (code, name,  company_id) VALUES(1, 'FlexSelect', 1);
 
 
 INSERT INTO users (username, password, enabled, company_id, name, last_name, email) VALUES('jmccorto@gmail.com', '$2a$10$C3Uln5uqnzx/GswADURJGOIdBqYrly9731fnwKDaUdBkt/M3qvtLq', 1, 1, 'Juan Carlos', 'Coca', 'jmccorto@gmail.com');
@@ -20,9 +17,9 @@ INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);
 INSERT INTO users_roles (user_id, role_id) VALUES (2, 2);
 INSERT INTO users_roles (user_id, role_id) VALUES (3, 1);
 
-INSERT INTO products (code, create_at, description, price, provider_id, company_id) VALUES (1, NOW(),'producto 1', 100, 1, 1);
+--INSERT INTO products (code, create_at, description, price, provider_id, company_id) VALUES (1, NOW(),'producto 1', 100, 1, 1);
 --INSERT INTO products (code, create_at, description, price, company_id) VALUES (1, NOW(),'producto 2', 100, 2);
-INSERT INTO products (code, create_at, description, price, provider_id, company_id) VALUES (2, NOW(),'producto 3', 300, 1, 1);
+--INSERT INTO products (code, create_at, description, price, provider_id, company_id) VALUES (2, NOW(),'producto 3', 300, 1, 1);
 --INSERT INTO products (code, create_at, description, price, company_id) VALUES (2, NOW(),'producto 4', 250, 2);
 
 

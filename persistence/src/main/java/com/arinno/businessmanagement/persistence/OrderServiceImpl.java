@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -40,6 +41,8 @@ public class OrderServiceImpl implements IOrderService {
         return orderDAO.findByCompany(pageable, company);
     }
 
+
+
     @Override
     @Transactional
     public Order save(Order order) {
@@ -64,18 +67,38 @@ public class OrderServiceImpl implements IOrderService {
         orderDAO.deleteById(id);
     }
 
+/*
     @Override
     public List<Order> findByInvoiceIsNullAndCompanyOrderByCustomer(Company company) {
         return orderDAO.findByInvoiceIsNullAndCompanyOrderByCustomer(company);
     }
-
+*/
     @Override
     public List<Customer> findCustomerDistinctByInvoiceIsNullAndCompany(Company company) {
         return orderDAO.findCustomerDistinctByInvoiceIsNullAndCompany(company);
     }
 
+
     @Override
     public List<Order> findByInvoiceIsNullAndCustomer(Customer customer) {
         return orderDAO.findByInvoiceIsNullAndCustomer(customer);
     }
+
+    @Override
+    public List<Order> findByInvoiceIsNullAndCustomerAndCreateAtAfterAndCreateAtBefore(Customer customer, Date FromDate, Date ToDate) {
+        return orderDAO.findByInvoiceIsNullAndCustomerAndCreateAtAfterAndCreateAtBefore(customer, FromDate, ToDate);
+    }
+
+    @Override
+    public List<Order> findByInvoiceIsNullAndCustomerAndCreateAtBetween(Customer customer, Date fromDate, Date toDate) {
+        return orderDAO.findByInvoiceIsNullAndCustomerAndCreateAtBetween(customer, fromDate, toDate);
+    }
+
+
+    @Override
+    public List<Customer> findCustomerDistinctByInvoiceIsNullAndCreateAtBetweenAndCompany(Date fromDate, Date toDate, Company company) {
+        return orderDAO.findCustomerDistinctByInvoiceIsNullAndCreateAtBetweenAndCompany(fromDate, toDate, company);
+    }
+
+
 }

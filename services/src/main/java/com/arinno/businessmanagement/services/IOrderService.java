@@ -6,6 +6,7 @@ import com.arinno.businessmanagement.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IOrderService {
@@ -20,11 +21,19 @@ public interface IOrderService {
 
     void deleteById(Long id);
 
-    List<Order> findByInvoiceIsNullAndCompanyOrderByCustomer(Company company);
-
     List<Customer> findCustomerDistinctByInvoiceIsNullAndCompany(Company company);
+
+ //   List<Order> findByInvoiceIsNullAndCompanyOrderByCustomer(Company company);
 
     List<Order> findByInvoiceIsNullAndCustomer(Customer customer);
 
+    List<Order> findByInvoiceIsNullAndCustomerAndCreateAtAfterAndCreateAtBefore(Customer customer, Date FromDate, Date ToDate);
+
+    List<Order> findByInvoiceIsNullAndCustomerAndCreateAtBetween(Customer customer, Date fromDate, Date toDate);
+
     Page<Order> findByCompany(Pageable pageable, Company company);
+
+    List<Customer> findCustomerDistinctByInvoiceIsNullAndCreateAtBetweenAndCompany(Date fromDate, Date toDate, Company company);
+
+
 }

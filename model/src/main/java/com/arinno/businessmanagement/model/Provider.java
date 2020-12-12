@@ -21,13 +21,8 @@ public class Provider {
 
     private String name;
 
-    private String address;
-
-    private String phone;
-
-    private String fax;
-
-    private String web;
+    @Embedded
+    private Address address;
 
     @Column(name="create_at")
     @Temporal(TemporalType.DATE)
@@ -62,38 +57,6 @@ public class Provider {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getFax() {
-        return fax;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
-
-    public String getWeb() {
-        return web;
-    }
-
-    public void setWeb(String web) {
-        this.web = web;
-    }
-
     public Date getCreateAt() {
         return createAt;
     }
@@ -102,7 +65,27 @@ public class Provider {
         this.createAt = createAt;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    @Override
+    public String toString() {
+        return "Provider{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", address=" + address +
+                ", createAt=" + createAt +
+                ", company=" + company +
+                '}';
     }
 }

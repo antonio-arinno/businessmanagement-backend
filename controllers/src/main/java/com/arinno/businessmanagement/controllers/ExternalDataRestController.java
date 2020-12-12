@@ -171,7 +171,7 @@ public class ExternalDataRestController {
         }
     }
 
-    public static List<Product> excelToProducts(InputStream is, Company company, Provider provider) {
+    public List<Product> excelToProducts(InputStream is, Company company, Provider provider) {
         try {
             Workbook workbook = new XSSFWorkbook(is);
 
@@ -204,15 +204,34 @@ public class ExternalDataRestController {
 
                     switch (cellIdx) {
                         case 0:
-                            product.setCode(currentCell.getStringCellValue());
+                            Provider provider2 = providerService.findByCodeAndCompany(currentCell.getStringCellValue(), company);
+                            product.setProvider(provider2);
                             break;
 
                         case 1:
-                            product.setDescription(currentCell.getStringCellValue());
+                            product.setCode(currentCell.getStringCellValue());
                             break;
 
                         case 2:
+                            product.setDescription(currentCell.getStringCellValue());
+                            break;
+
+                        case 3:
                             product.setPrice(currentCell.getNumericCellValue());
+                            break;
+
+                        case 4:
+                            if(currentCell.getNumericCellValue()==0){
+                                product.setIvaType(IvaType.GENERAL);
+                            }else{
+                                if(currentCell.getNumericCellValue()==1){
+                                    product.setIvaType(IvaType.REDUCED);
+                                }else{
+                                    if(currentCell.getNumericCellValue()==2){
+                                        product.setIvaType(IvaType.SUPER_REDUCED);
+                                    }
+                                }
+                            }
                             break;
 
                         default:
