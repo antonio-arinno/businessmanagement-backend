@@ -136,7 +136,7 @@ public class ProductRestController {
 
         Product currentProduct = (Product) responseEntity.getBody();
         currentProduct.setDescription(product.getDescription());
-        currentProduct.setPrice(product.getPrice());
+        currentProduct.setSalePrice(product.getSalePrice());
         currentProduct.setCode(product.getCode());
         currentProduct.setProvider(product.getProvider());
         Product updateProduct = null;

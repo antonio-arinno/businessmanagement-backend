@@ -27,10 +27,8 @@ public class Product implements Serializable {
 
     private String description;
 
-    private Double price;
-
-
-
+    @Column(name="sale_price")
+    private Double salePrice;
 
     @Enumerated(value = EnumType.ORDINAL)
     private IvaType ivaType;
@@ -81,12 +79,12 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getSalePrice() {
+        return salePrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
     }
 
     public Date getCreateAt() {
@@ -126,7 +124,7 @@ public class Product implements Serializable {
                 "id=" + id +
                 ", code=" + code +
                 ", description='" + description + '\'' +
-                ", price=" + price +
+                ", price=" + salePrice +
                 ", createAt=" + createAt +
                 ", company=" + company +
                 '}';

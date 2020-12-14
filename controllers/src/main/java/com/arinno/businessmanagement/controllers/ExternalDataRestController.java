@@ -217,7 +217,7 @@ public class ExternalDataRestController {
                             break;
 
                         case 3:
-                            product.setPrice(currentCell.getNumericCellValue());
+                            product.setSalePrice(currentCell.getNumericCellValue());
                             break;
 
                         case 4:
