@@ -225,8 +225,8 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             cb.moveTo(20,530);
             cb.lineTo(570,530);
 
-            cb.moveTo(90,150);
-            cb.lineTo(90,550);
+            cb.moveTo(85,150);
+            cb.lineTo(85,550);
 
             cb.moveTo(138,150);
             cb.lineTo(138,550);
@@ -247,7 +247,7 @@ public class GeneratePdfReport implements IGeneratePdfReport {
 
             // Invoice Detail box Text Headings
             createHeadings(cb,22,533,"Ref.", PdfContentByte.ALIGN_RIGHT);
-            createHeadings(cb,92,533,"Lote", PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,87,533,"Lote", PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,142,533,"Concept", PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,395,533,"Price", PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,441,533,"Dto", PdfContentByte.ALIGN_RIGHT);
@@ -288,7 +288,7 @@ public class GeneratePdfReport implements IGeneratePdfReport {
         DecimalFormat df = new DecimalFormat("0.00");
 
         createContent(cb,24,y, orderItem.getProduct().getCode(),PdfContentByte.ALIGN_LEFT);
-//        createContent(cb,87,y, "ITEM" + String.valueOf(1),PdfContentByte.ALIGN_LEFT);
+        createContent(cb,87,y, orderItem.getLot(), PdfContentByte.ALIGN_LEFT);
         createContent(cb,142,y, orderItem.getProduct().getDescription(),PdfContentByte.ALIGN_LEFT);
         createContent(cb,415,y, df.format(orderItem.getPrice()),PdfContentByte.ALIGN_RIGHT);
 

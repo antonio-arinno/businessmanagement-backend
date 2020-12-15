@@ -157,11 +157,18 @@ public class OrderRestController {
 
         responseEntity = this.getOrderOrErr(id, authentication);
 
-
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
         }
 
+        Order currentOrder = (Order) responseEntity.getBody();
+
+        if (currentOrder.getInvoice()!=null){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Albaran ya facturado");
+            response.put("message", "Albaran facturado en factura:"+ currentOrder.getInvoice().getNumber());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
 
         if (order.getCustomer().getId()==null){
             Map<String, Object> response = new HashMap<>();
@@ -179,7 +186,6 @@ public class OrderRestController {
 
         Map<String, Object> response = new HashMap<>();
 
-        Order currentOrder = (Order) responseEntity.getBody();
         currentOrder.setCustomer(order.getCustomer());
         currentOrder.setCreateAt(order.getCreateAt());
         currentOrder.setObservation(order.getObservation());
@@ -209,6 +215,15 @@ public class OrderRestController {
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
+        }
+
+        Order currentOrder = (Order) responseEntity.getBody();
+
+        if (currentOrder.getInvoice()!=null){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Albaran ya facturado");
+            response.put("message", "Albaran facturado en factura:"+ currentOrder.getInvoice().getNumber());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
         Map<String, Object> response = new HashMap<>();

@@ -24,6 +24,8 @@ public class OrderItem {
 
     private IvaType ivaType;
 
+    private String Lot;
+
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,6 +77,14 @@ public class OrderItem {
 
     public void setIvaType(IvaType ivaType) {
         this.ivaType = ivaType;
+    }
+
+    public String getLot() {
+        return Lot;
+    }
+
+    public void setLot(String lot) {
+        Lot = lot;
     }
 
     public Product getProduct() {

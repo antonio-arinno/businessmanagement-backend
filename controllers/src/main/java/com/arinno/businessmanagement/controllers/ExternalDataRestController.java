@@ -34,7 +34,6 @@ import java.util.*;
 @RequestMapping("/api")
 public class ExternalDataRestController {
 
-
     @Autowired
     private ICustomerService customerService;
 
@@ -46,7 +45,6 @@ public class ExternalDataRestController {
 
     @Autowired
     private IUtil util;
-
 
     @PostMapping("/upload/customer")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, Authentication authentication){
