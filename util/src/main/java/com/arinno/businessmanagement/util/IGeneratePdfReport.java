@@ -1,5 +1,6 @@
 package com.arinno.businessmanagement.util;
 
+import com.arinno.businessmanagement.model.BuyOrder;
 import com.arinno.businessmanagement.model.Invoice;
 import com.arinno.businessmanagement.model.Order;
 import com.itextpdf.text.DocumentException;
@@ -20,4 +21,5 @@ public interface IGeneratePdfReport {
 
     public ByteArrayInputStream ordersPDFReport(List<Order> orders);
 
+    public ByteArrayInputStream generateBuyOrder(BuyOrder buyOrder) throws DocumentException;
 }

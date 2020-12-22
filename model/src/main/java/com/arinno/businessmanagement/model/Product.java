@@ -27,6 +27,9 @@ public class Product implements Serializable {
 
     private String description;
 
+    @Column(name="buy_price")
+    private Double buyPrice;
+
     @Column(name="sale_price")
     private Double salePrice;
 
@@ -47,8 +50,6 @@ public class Product implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
-
-
 
     @PrePersist
     public void prePersist(){
@@ -77,6 +78,14 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Double getBuyPrice() {
+        return buyPrice;
+    }
+
+    public void setBuyPrice(Double buyPrice) {
+        this.buyPrice = buyPrice;
     }
 
     public Double getSalePrice() {

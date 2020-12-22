@@ -147,8 +147,6 @@ public class CustomerRestController {
 
         currentCustomer.setTaxId(customer.getTaxId());
 
-        System.out.print(customer.getAddress().toString());
-
         currentCustomer.getAddress().setTypeStreet(customer.getAddress().getTypeStreet());
         currentCustomer.getAddress().setStreet(customer.getAddress().getStreet());
         currentCustomer.getAddress().setNumberKm(customer.getAddress().getNumberKm());

@@ -3,6 +3,7 @@ package com.arinno.businessmanagement.services;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
+import com.arinno.businessmanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,4 +30,5 @@ public interface IProductService {
 
     public void saveAll(List<Product> products);
 
+    List<Product> findByDescriptionContainingIgnoreCaseAndProviderAndCompany(String term, Provider provider, Company company);
 }

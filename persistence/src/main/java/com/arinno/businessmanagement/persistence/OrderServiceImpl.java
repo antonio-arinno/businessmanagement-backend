@@ -20,8 +20,6 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private IOrderDAO orderDAO;
 
-
-
     @Override
     @Transactional(readOnly = true)
     public Order findByIdAndCompany(Long id, Company company) {
@@ -40,8 +38,6 @@ public class OrderServiceImpl implements IOrderService {
     public Page<Order> findByCompany(Pageable pageable, Company company) {
         return orderDAO.findByCompany(pageable, company);
     }
-
-
 
     @Override
     @Transactional

@@ -3,6 +3,7 @@ package com.arinno.businessmanagement.persistence;
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Customer;
 import com.arinno.businessmanagement.model.Product;
+import com.arinno.businessmanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -24,4 +25,5 @@ public interface IProductDAO extends CrudRepository<Product, Long> {
 
     Page<Product> findByCompany(Pageable pageable, Company company);
 
+    List<Product> findByDescriptionContainingIgnoreCaseAndProviderAndCompany(String term, Provider provider, Company company);
 }

@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class ProductRestController {
 
-
     @Autowired
     private IProductService productService;
 
@@ -136,6 +135,7 @@ public class ProductRestController {
 
         Product currentProduct = (Product) responseEntity.getBody();
         currentProduct.setDescription(product.getDescription());
+        currentProduct.setBuyPrice(product.getBuyPrice());
         currentProduct.setSalePrice(product.getSalePrice());
         currentProduct.setCode(product.getCode());
         currentProduct.setProvider(product.getProvider());

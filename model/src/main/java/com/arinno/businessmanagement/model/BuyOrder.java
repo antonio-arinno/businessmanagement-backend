@@ -1,17 +1,17 @@
 package com.arinno.businessmanagement.model;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name="orders",
+@Table(name="buy_orders",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"company_id" , "number"})})
-public class Order {
+public class BuyOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,27 +30,18 @@ public class Order {
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch=FetchType.LAZY)
-    private Customer customer;
+    private Provider provider;
 
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch=FetchType.LAZY)
-    private Invoice invoice;
+    @NotNull
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "buy_order_id")
+    private List<BuyOrderItem> items;
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
-
-    @NotNull
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id")
-    private List<OrderItem> items;
-
-    public Order() {
-        this.items = new ArrayList<>();
-    }
 
     public Long getId() {
         return id;
@@ -84,27 +75,19 @@ public class Order {
         this.createAt = createAt;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Provider getProvider() {
+        return provider;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
-    public Invoice getInvoice() {
-        return invoice;
-    }
-
-    public void setInvoice(Invoice invoice) {
-        this.invoice = invoice;
-    }
-
-    public List<OrderItem> getItems() {
+    public List<BuyOrderItem> getItems() {
         return items;
     }
 
-    public void setItems(List<OrderItem> items) {
+    public void setItems(List<BuyOrderItem> items) {
         this.items = items;
     }
 
@@ -118,7 +101,7 @@ public class Order {
 
     public Double getTotal(){
         Double total = 0.00;
-        for(OrderItem item: items){
+        for(BuyOrderItem item: items){
             total += item.getAmount();
         }
         return total;
@@ -126,7 +109,7 @@ public class Order {
 
     public Double getTotalWithIva(){
         Double total = 0.00;
-        for(OrderItem item: items){
+        for(BuyOrderItem item: items){
             total += item.getAmountWithIva();
         }
         return total;
@@ -134,7 +117,7 @@ public class Order {
 
     public Double getTotal(IvaType ivaType){
         Double total = 0.00;
-        for(OrderItem item: items){
+        for(BuyOrderItem item: items){
             if(item.getIvaType() == ivaType) {
                 total += item.getAmount();
             }
@@ -144,7 +127,7 @@ public class Order {
 
     public Double getTotalIva(IvaType ivaType){
         Double total = 0.00;
-        for(OrderItem item: items){
+        for(BuyOrderItem item: items){
             if(item.getIvaType() == ivaType) {
                 total += item.getAmountIva();
             }
@@ -154,7 +137,7 @@ public class Order {
 
     public boolean hasIvaType(IvaType ivaType) {
         Boolean hasIvaType = false;
-        for(OrderItem item: items){
+        for(BuyOrderItem item: items){
             if(item.getIvaType() == ivaType) {
                 hasIvaType = true;
                 break;
@@ -165,17 +148,14 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "BuyOrder{" +
                 "id=" + id +
                 ", number=" + number +
                 ", observation='" + observation + '\'' +
                 ", createAt=" + createAt +
-                ", customer=" + customer +
-                ", invoice=" + invoice +
-                ", company=" + company +
+                ", provider=" + provider +
                 ", items=" + items +
+                ", company=" + company +
                 '}';
     }
-
-
 }

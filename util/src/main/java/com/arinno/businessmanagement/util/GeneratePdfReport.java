@@ -130,6 +130,45 @@ public class GeneratePdfReport implements IGeneratePdfReport {
 
     }
 
+    @Override
+    public ByteArrayInputStream generateBuyOrder(BuyOrder buyOrder) throws DocumentException {
+        Document doc = new Document();
+        PdfWriter docWriter = null;
+        initializeFonts();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        docWriter = PdfWriter.getInstance(doc, out);
+        doc.open();
+        PdfContentByte cb = docWriter.getDirectContent();
+
+        boolean beginPage = true;
+        int y = 0;
+
+        for (BuyOrderItem buyOrderItem : buyOrder.getItems()){
+            if(beginPage){
+                beginPage = false;
+                generateLayout(doc, cb);
+                generateHeader(buyOrder, cb);
+                y = 515;
+            }
+            generateDetail(buyOrderItem, cb, y);
+            y = y - 15;
+            if(y < 145){
+                printPageNumber(cb);
+                doc.newPage();
+                beginPage = true;
+            }
+        }
+
+        generateFooter(cb, buyOrder);
+
+        printPageNumber(cb);
+        doc.close();
+
+        return new ByteArrayInputStream(out.toByteArray());
+
+    }
+
     private void generateHeader(Order order, PdfContentByte cb)  {
 
         Customer customer = order.getCustomer();
@@ -189,6 +228,40 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             createHeadings(cb,482,643, invoice.getCustomer().getCode(), PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,482,623, String.valueOf(invoice.getNumber()), PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,482,603, String.valueOf(invoice.getCreateAt()), PdfContentByte.ALIGN_RIGHT);
+
+        }
+
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    private void generateHeader(BuyOrder buyOrder, PdfContentByte cb)  {
+
+        Provider provider = buyOrder.getProvider();
+        Company company = buyOrder.getCompany();
+
+        try {
+
+            createHeadings(cb,400,750, company.getName(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,400,735, company.getAddress().getAddressLine_1(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,400,720, company.getAddress().getAddressLine_2(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,400,705, company.getAddress().getCountry(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,400,690, company.getAddress().getAddressLine_3(), PdfContentByte.ALIGN_RIGHT);
+
+            createHeadings(cb,50,650, provider.getName(), PdfContentByte.ALIGN_RIGHT);
+//            createHeadings(cb,50,635, order.getCustomer().getFullAddress(), PdfContentByte.ALIGN_RIGHT);
+
+            createHeadings(cb,50,635, provider.getAddress().getAddressLine_1(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,50,620, provider.getAddress().getAddressLine_2(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,50,605, provider.getAddress().getCountry(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,50,590, provider.getAddress().getAddressLine_3(), PdfContentByte.ALIGN_RIGHT);
+
+
+            createHeadings(cb,482,643, buyOrder.getProvider().getCode(), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,482,623, String.valueOf(buyOrder.getNumber()), PdfContentByte.ALIGN_RIGHT);
+            createHeadings(cb,482,603, String.valueOf(buyOrder.getCreateAt()), PdfContentByte.ALIGN_RIGHT);
 
         }
 
@@ -288,7 +361,9 @@ public class GeneratePdfReport implements IGeneratePdfReport {
         DecimalFormat df = new DecimalFormat("0.00");
 
         createContent(cb,24,y, orderItem.getProduct().getCode(),PdfContentByte.ALIGN_LEFT);
-        createContent(cb,87,y, orderItem.getLot(), PdfContentByte.ALIGN_LEFT);
+        if(orderItem.getLot()!=null) {
+            createContent(cb, 87, y, orderItem.getLot(), PdfContentByte.ALIGN_LEFT);
+        }
         createContent(cb,142,y, orderItem.getProduct().getDescription(),PdfContentByte.ALIGN_LEFT);
         createContent(cb,415,y, df.format(orderItem.getPrice()),PdfContentByte.ALIGN_RIGHT);
 
@@ -296,6 +371,23 @@ public class GeneratePdfReport implements IGeneratePdfReport {
 
         createContent(cb,498,y, String.valueOf(orderItem.getQuantity()),PdfContentByte.ALIGN_RIGHT);
         createContent(cb,568,y, df.format(orderItem.getAmount()),PdfContentByte.ALIGN_RIGHT);
+
+    }
+
+    private void generateDetail(BuyOrderItem buyOrderItem, PdfContentByte cb, int y)  {
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        createContent(cb,24,y, buyOrderItem.getProduct().getCode(),PdfContentByte.ALIGN_LEFT);
+        if(buyOrderItem.getLot()!=null) {
+            createContent(cb, 87, y, buyOrderItem.getLot(), PdfContentByte.ALIGN_LEFT);
+        }
+        createContent(cb,142,y, buyOrderItem.getProduct().getDescription(),PdfContentByte.ALIGN_LEFT);
+        createContent(cb,415,y, df.format(buyOrderItem.getPrice()),PdfContentByte.ALIGN_RIGHT);
+
+        createContent(cb,455,y, df.format(buyOrderItem.getDiscount()),PdfContentByte.ALIGN_RIGHT);
+
+        createContent(cb,498,y, String.valueOf(buyOrderItem.getQuantity()),PdfContentByte.ALIGN_RIGHT);
+        createContent(cb,568,y, df.format(buyOrderItem.getAmount()),PdfContentByte.ALIGN_RIGHT);
 
     }
 
@@ -379,6 +471,39 @@ public class GeneratePdfReport implements IGeneratePdfReport {
 
     }
 
+    private void generateFooter(PdfContentByte cb, BuyOrder buyOrder){
+        DecimalFormat df = new DecimalFormat("0.00");
+        int y = 80;
+
+        createContent(cb,150,100, "Total Neto EUR",PdfContentByte.ALIGN_RIGHT);
+        createContent(cb,225,100, "IVA",PdfContentByte.ALIGN_LEFT);
+        createHeadings(cb,350,100, "Total EUR", PdfContentByte.ALIGN_RIGHT);
+
+        cb.moveTo(20,90);
+        cb.lineTo(570,90);
+        cb.stroke();
+
+        if(buyOrder.hasIvaType(IvaType.GENERAL)) {
+            createContent(cb, 150, y, df.format(buyOrder.getTotal(IvaType.GENERAL)), PdfContentByte.ALIGN_RIGHT);
+            createContent(cb, 225, y, df.format(buyOrder.getTotalIva(IvaType.GENERAL)), PdfContentByte.ALIGN_LEFT);
+            y -= 10;
+        }
+
+        if(buyOrder.hasIvaType(IvaType.REDUCED)) {
+            createContent(cb, 150, y, df.format(buyOrder.getTotal(IvaType.REDUCED)), PdfContentByte.ALIGN_RIGHT);
+            createContent(cb, 225, y, df.format(buyOrder.getTotalIva(IvaType.REDUCED)), PdfContentByte.ALIGN_LEFT);
+            y -= 10;
+        }
+
+        if(buyOrder.hasIvaType(IvaType.SUPER_REDUCED)) {
+            createContent(cb, 150, y, df.format(buyOrder.getTotal(IvaType.SUPER_REDUCED)), PdfContentByte.ALIGN_RIGHT);
+            createContent(cb, 225, y, df.format(buyOrder.getTotalIva(IvaType.SUPER_REDUCED)), PdfContentByte.ALIGN_LEFT);
+        }
+
+        createHeadings(cb,350,80, df.format(buyOrder.getTotalWithIva()), PdfContentByte.ALIGN_RIGHT);
+
+    }
+
     private void printPageNumber(PdfContentByte cb){
 
 
@@ -454,5 +579,6 @@ public class GeneratePdfReport implements IGeneratePdfReport {
         }
         return new ByteArrayInputStream(out.toByteArray());
     }
+
 
 }

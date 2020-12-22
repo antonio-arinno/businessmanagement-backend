@@ -140,9 +140,6 @@ public class ProviderRestController {
 
     }
 
-
-
-
     private ResponseEntity<?> getProviderOrErr(Long id, Authentication authentication) {
 
         Map<String, Object> response = new HashMap<>();
