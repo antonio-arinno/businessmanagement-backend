@@ -23,6 +23,12 @@ public class BuyOrderServiceImpl implements IBuyOrderService {
     }
 
     @Override
+    public Page<BuyOrder> findByInputDateIsNullAndCompany(Pageable pageable, Company company) {
+        return buyOrderDAO.findByInputDateIsNullAndCompany(pageable, company);
+    }
+
+
+    @Override
     @Transactional
     public BuyOrder save(BuyOrder buyOrder) {
         Long number = buyOrderDAO.nextOrderNumber(buyOrder.getCompany());

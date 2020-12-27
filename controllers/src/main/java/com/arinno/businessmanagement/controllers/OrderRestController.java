@@ -3,6 +3,7 @@ package com.arinno.businessmanagement.controllers;
 import com.arinno.businessmanagement.model.*;
 import com.arinno.businessmanagement.services.ICustomerService;
 import com.arinno.businessmanagement.services.IOrderService;
+import com.arinno.businessmanagement.services.IProductLotService;
 import com.arinno.businessmanagement.services.IProductService;
 import com.arinno.businessmanagement.util.IGeneratePdfReport;
 import com.arinno.businessmanagement.util.IUtil;
@@ -23,9 +24,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -45,6 +44,9 @@ public class OrderRestController {
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private IProductLotService productLotService;
 
     @Autowired
     private IGeneratePdfReport generatePdfReport;
@@ -99,6 +101,19 @@ public class OrderRestController {
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/orders/load-lot/{id}")
+    public List<String> loadLot(@PathVariable Long id, Authentication authentication){
+        Company company = util.getCompany(authentication);
+        Product product = productService.findByIdAndCompany(id, company);
+        List<ProductLot> productLots = productLotService.findByProductAndCompany(product, company);
+        List<String> lots = new ArrayList<String>();
+        for (ProductLot productLot: productLots){
+            lots.add(productLot.getLot());
+        }
+        return lots;
+    }
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
     @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@Valid @RequestBody Order order, BindingResult result, Authentication authentication){
@@ -124,9 +139,30 @@ public class OrderRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
+        ProductLot productLot = null;
+        Company company = util.getCompany(authentication);
+        for (OrderItem item : order.getItems()) {
+            productLot = productLotService.findByProductAndLotAndCompany(item.getProduct(), item.getLot(), company);
+            if(item.getLot()==null){
+                Map<String, Object> response = new HashMap<>();
+                response.put("error", "El lote debe tener valor");
+                response.put("message", item.getProduct().getDescription() + " " +
+                        item.getQuantity());
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            if(item.getQuantity()>productLot.getStock()){
+                Map<String, Object> response = new HashMap<>();
+                response.put("error", "No hay stock suficiente");
+                response.put("message", item.getProduct().getDescription() + " " +
+                                        item.getQuantity() + " " +
+                                        productLot.getStock());
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+        }
+
         Map<String, Object> response = new HashMap<>();
         Order  newOrder = null;
-        Company company = util.getCompany(authentication);
         order.setCompany(company);
 
         try {
@@ -137,8 +173,20 @@ public class OrderRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("title", "Nueva Orden");
-        response.put("message", "La orden ha sido creada con éxito!");
+        Integer quantity = null;
+        for (OrderItem item : order.getItems()) {
+            productLot = productLotService.findByProductAndLotAndCompany(item.getProduct(), item.getLot(), company);
+            quantity = productLot.getStock() - item.getQuantity();
+            if(quantity==0){
+                productLotService.deleteById(productLot.getId());
+            }else{
+                productLot.setStock(quantity);
+                productLotService.save(productLot);
+            }
+        }
+
+        response.put("title", "Nueva Orden Confirmada");
+        response.put("message", "Almacen Actualizado");
         response.put("order", newOrder);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 
@@ -184,6 +232,61 @@ public class OrderRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
+        ProductLot productLot = null;
+        Company company = util.getCompany(authentication);
+        Integer quantity = null;
+        for (OrderItem item : currentOrder.getItems()) {
+            productLot = productLotService.findByProductAndLotAndCompany(item.getProduct(), item.getLot(), company);
+            if (productLot==null){
+                productLot = new ProductLot();
+                productLot.setProduct(item.getProduct());
+                productLot.setLot(item.getLot());
+                productLot.setStock(item.getQuantity());
+                productLot.setCompany(company);
+            }else {
+                quantity = productLot.getStock() + item.getQuantity();
+                productLot.setStock(quantity);
+            }
+            productLotService.save(productLot);
+        }
+
+
+        for (OrderItem item : order.getItems()) {
+            productLot = productLotService.findByProductAndLotAndCompany(item.getProduct(), item.getLot(), company);
+            if (item.getQuantity() > productLot.getStock()) {
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("error", "No hay stock suficiente");
+                response.put("message", item.getProduct().getDescription() + " " +
+                        item.getQuantity() + " " +
+                        productLot.getStock());
+
+                for (OrderItem currentItem : currentOrder.getItems()) {
+                    productLot = productLotService.findByProductAndLotAndCompany(currentItem.getProduct(), currentItem.getLot(), company);
+                    quantity = productLot.getStock() - currentItem.getQuantity();
+                    if(quantity==0){
+                        productLotService.deleteById(productLot.getId());
+                    }else{
+                        productLot.setStock(quantity);
+                        productLotService.save(productLot);
+                    }
+                }
+
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        for (OrderItem item : order.getItems()) {
+            productLot = productLotService.findByProductAndLotAndCompany(item.getProduct(), item.getLot(), company);
+            quantity = productLot.getStock() - item.getQuantity();
+            if(quantity==0){
+                productLotService.deleteById(productLot.getId());
+            }else{
+                productLot.setStock(quantity);
+                productLotService.save(productLot);
+            }
+        }
+
         Map<String, Object> response = new HashMap<>();
 
         currentOrder.setCustomer(order.getCustomer());
@@ -200,7 +303,9 @@ public class OrderRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("message", "la orden ha sido actualizado con éxito!");
+        response.put("title", "Orden Actualizada");
+        response.put("message", "Almacen Actualizado");
+
         response.put("orden", updateOrder);
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
@@ -236,8 +341,26 @@ public class OrderRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        ProductLot productLot = null;
+        Company company = util.getCompany(authentication);
+        Integer quantity = null;
+        for (OrderItem item : currentOrder.getItems()) {
+            productLot = productLotService.findByProductAndLotAndCompany(item.getProduct(), item.getLot(), company);
+            if (productLot==null){
+                productLot = new ProductLot();
+                productLot.setProduct(item.getProduct());
+                productLot.setLot(item.getLot());
+                productLot.setStock(item.getQuantity());
+                productLot.setCompany(company);
+            }else {
+                quantity = productLot.getStock() + item.getQuantity();
+                productLot.setStock(quantity);
+            }
+            productLotService.save(productLot);
+        }
+
         response.put("title", "Orden eliminado");
-        response.put("message", "Orden eliminada con éxito!");
+        response.put("message", "Almacen actualizado");
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 

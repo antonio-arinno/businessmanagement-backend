@@ -27,6 +27,12 @@ public class BuyOrder {
     @Temporal(TemporalType.DATE)
     private Date createAt;
 
+    @Column(name="input_date")
+    @Temporal(TemporalType.DATE)
+    private Date inputDate;
+
+
+
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch=FetchType.LAZY)
@@ -73,6 +79,14 @@ public class BuyOrder {
 
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
+    }
+
+    public Date getInputDate() {
+        return inputDate;
+    }
+
+    public void setInputDate(Date inputDate) {
+        this.inputDate = inputDate;
     }
 
     public Provider getProvider() {

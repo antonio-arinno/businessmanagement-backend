@@ -24,7 +24,7 @@ public class OrderItem {
 
     private IvaType ivaType;
 
-    private String Lot;
+    private String lot;
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
@@ -80,11 +80,11 @@ public class OrderItem {
     }
 
     public String getLot() {
-        return Lot;
+        return lot;
     }
 
     public void setLot(String lot) {
-        Lot = lot;
+        this.lot = lot;
     }
 
     public Product getProduct() {
@@ -108,6 +108,17 @@ public class OrderItem {
         return getAmount() * (iva.doubleValue() / 100);
     }
 
-
-
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "id=" + id +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", discount=" + discount +
+                ", iva=" + iva +
+                ", ivaType=" + ivaType +
+                ", lot='" + lot + '\'' +
+                ", product=" + product +
+                '}';
+    }
 }

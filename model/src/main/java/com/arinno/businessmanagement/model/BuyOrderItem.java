@@ -23,7 +23,7 @@ public class BuyOrderItem {
 
     private IvaType ivaType;
 
-    private String Lot;
+    private String lot;
 
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
@@ -79,11 +79,11 @@ public class BuyOrderItem {
     }
 
     public String getLot() {
-        return Lot;
+        return lot;
     }
 
     public void setLot(String lot) {
-        Lot = lot;
+        this.lot = lot;
     }
 
     public Product getProduct() {

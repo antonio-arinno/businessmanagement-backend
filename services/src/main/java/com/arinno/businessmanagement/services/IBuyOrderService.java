@@ -9,6 +9,8 @@ public interface IBuyOrderService {
 
     Page<BuyOrder> findByCompany(Pageable pageable, Company company);
 
+    Page<BuyOrder> findByInputDateIsNullAndCompany(Pageable pageable, Company company);
+
     BuyOrder save(BuyOrder buyOrder);
 
     BuyOrder findByIdAndCompany(Long id, Company company);

@@ -3,6 +3,7 @@ package com.arinno.businessmanagement.controllers;
 
 import com.arinno.businessmanagement.model.*;
 import com.arinno.businessmanagement.services.IBuyOrderService;
+import com.arinno.businessmanagement.services.IProductLotService;
 import com.arinno.businessmanagement.services.IProductService;
 import com.arinno.businessmanagement.services.IProviderService;
 import com.arinno.businessmanagement.util.IGeneratePdfReport;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,9 @@ public class BuyOrderRestController {
     private IProductService productService;
 
     @Autowired
+    private IProductLotService productLotService;
+
+    @Autowired
     private IUtil util;
 
     @Autowired
@@ -56,11 +61,19 @@ public class BuyOrderRestController {
         return getBuyOrderOrErr(id, authentication);
     }
 
+
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/buy-orders/page/{page}")
     public Page<BuyOrder> getBuyOrders(@PathVariable Integer page, Authentication authentication){
         Pageable pageable = PageRequest.of(page, 5);
         return buyOrderService.findByCompany(pageable, util.getCompany(authentication));
+    }
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/buy-orders/pending/page/{page}")
+    public Page<BuyOrder> getPendingBuyOrders(@PathVariable Integer page, Authentication authentication){
+        Pageable pageable = PageRequest.of(page, 5);
+        return buyOrderService.findByInputDateIsNullAndCompany(pageable, util.getCompany(authentication));
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
@@ -207,6 +220,70 @@ public class BuyOrderRestController {
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 
+    }
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @PutMapping("/buy-orders/update-store/{id}")
+    public ResponseEntity<?> updateStore(@Valid @RequestBody BuyOrder buyOrder, BindingResult result, @PathVariable Long id, Authentication authentication){
+
+        ResponseEntity<?> responseEntity = null;
+        responseEntity = getErrRequestBody(result);
+
+        if(responseEntity.getStatusCode()!=HttpStatus.OK){
+            return responseEntity;
+        }
+
+        responseEntity = this.getBuyOrderOrErr(id, authentication);
+
+        if(responseEntity.getStatusCode()!=HttpStatus.OK){
+            return responseEntity;
+        }
+
+        for (BuyOrderItem item : buyOrder.getItems()) {
+            if(item.getLot()==null){
+                Map<String, Object> response = new HashMap<>();
+                response.put("error", "No se admiten entregas parciales");
+                response.put("message", "Al menos hay un producto sin Lote");
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        BuyOrder currentBuyOrder = (BuyOrder) responseEntity.getBody();
+
+        if(currentBuyOrder.getInputDate()!=null){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Productos ya recibidos");
+            response.put("message", "Productos ya recibidos "+ currentBuyOrder.getInputDate());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+
+        currentBuyOrder.setInputDate(new Date());
+        currentBuyOrder.setItems(buyOrder.getItems());
+
+        BuyOrder updateBuyOrder = null;
+        try {
+            updateBuyOrder = buyOrderService.update(currentBuyOrder);
+        } catch (DataAccessException e) {
+            response.put("error", "Error al actualizar la order en la base de datos");
+            response.put("message", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        ProductLot productLot = null;
+        for (BuyOrderItem item : updateBuyOrder.getItems()) {
+            productLot = new ProductLot();
+            productLot.setProduct(item.getProduct());
+            productLot.setLot(item.getLot());
+            productLot.setStock(item.getQuantity());
+            productLot.setCompany(updateBuyOrder.getCompany());
+            productLotService.save(productLot);
+        }
+
+        response.put("message", "El Almacen ha sido actualizado correctamente");
+
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
