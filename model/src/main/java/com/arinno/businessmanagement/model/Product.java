@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by aarinopu on 08/01/2020.
@@ -39,6 +40,11 @@ public class Product implements Serializable {
     @Column(name="create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
+
+    @JsonIgnoreProperties({"product", "hibernateLazyInitializer", "handler" })
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<ProductLot> items;
 
 
     @NotNull
@@ -104,7 +110,6 @@ public class Product implements Serializable {
         this.createAt = createAt;
     }
 
-
     public Provider getProvider() {
         return provider;
     }
@@ -112,7 +117,6 @@ public class Product implements Serializable {
     public void setProvider(Provider provider) {
         this.provider = provider;
     }
-
 
     public IvaType getIvaType() {
         return ivaType;
@@ -122,10 +126,25 @@ public class Product implements Serializable {
         this.ivaType = ivaType;
     }
 
+    public List<ProductLot> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ProductLot> items) {
+        this.items = items;
+    }
+
     public void setCompany(Company company) {
         this.company = company;
     }
 
+    public Integer getStock(){
+        Integer total = 0;
+        for(ProductLot item: items){
+            total += item.getStock();
+        }
+        return total;
+    }
 
     @Override
     public String toString() {

@@ -5,6 +5,8 @@ import com.arinno.businessmanagement.model.Product;
 import com.arinno.businessmanagement.model.ProductLot;
 import com.arinno.businessmanagement.services.IProductLotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,18 @@ public class ProductLotServiceServiceImpl implements IProductLotService {
     @Transactional(readOnly = true)
     public List<ProductLot> findByProductAndCompany(Product product, Company company) {
         return productLotDAO.findByProductAndCompany(product, company);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductLot> findByCompany(Pageable pageable, Company company) {
+        return productLotDAO.findByCompany(pageable, company);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductLot> findByCompanyOrderByProduct(Pageable pageable, Company company) {
+        return productLotDAO.findByCompanyOrderByProduct(pageable, company);
     }
 
     @Override
@@ -39,4 +53,6 @@ public class ProductLotServiceServiceImpl implements IProductLotService {
     public void deleteById(Long id) {
         productLotDAO.deleteById(id);
     }
+
+
 }
