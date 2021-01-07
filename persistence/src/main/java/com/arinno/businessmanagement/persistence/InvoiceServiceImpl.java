@@ -4,6 +4,8 @@ import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Invoice;
 import com.arinno.businessmanagement.services.IInvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +45,10 @@ public class InvoiceServiceImpl implements IInvoiceService {
     @Override
     public List<Invoice> findByCompany(Company company) {
         return invoiceDAO.findByCompany(company);
+    }
+
+    @Override
+    public Page<Invoice> findByCompany(Pageable pageable, Company company) {
+        return invoiceDAO.findByCompany(pageable, company);
     }
 }

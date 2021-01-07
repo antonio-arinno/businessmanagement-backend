@@ -249,10 +249,7 @@ public class GeneratePdfReport implements IGeneratePdfReport {
             createHeadings(cb,400,720, company.getAddress().getAddressLine_2(), PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,400,705, company.getAddress().getCountry(), PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,400,690, company.getAddress().getAddressLine_3(), PdfContentByte.ALIGN_RIGHT);
-
             createHeadings(cb,50,650, provider.getName(), PdfContentByte.ALIGN_RIGHT);
-//            createHeadings(cb,50,635, order.getCustomer().getFullAddress(), PdfContentByte.ALIGN_RIGHT);
-
             createHeadings(cb,50,635, provider.getAddress().getAddressLine_1(), PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,50,620, provider.getAddress().getAddressLine_2(), PdfContentByte.ALIGN_RIGHT);
             createHeadings(cb,50,605, provider.getAddress().getCountry(), PdfContentByte.ALIGN_RIGHT);

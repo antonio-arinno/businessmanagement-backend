@@ -73,11 +73,19 @@ public class ProviderRestController {
     @PostMapping("/providers")
     public ResponseEntity<?> create(@Valid @RequestBody Provider provider, BindingResult result, Authentication authentication) {
 
+
         ResponseEntity<?> responseEntity = null;
         responseEntity = util.getErrRequestBody(result);
 
         if(responseEntity.getStatusCode()!=HttpStatus.OK){
             return responseEntity;
+        }
+
+        if(provider.hasIncompleteAddress()){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Direccion incompleta");
+            response.put("message", "Tipo de Calle, Calle, Numero, Ciudad, Provincia, Pais, Codigo Postal");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
         Map<String, Object> response = new HashMap<>();
@@ -91,8 +99,8 @@ public class ProviderRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("title", "Nuevo producto");
-        response.put("message", "El producto ha sido creado con éxito!");
+        response.put("title", "Nuevo proveedor");
+        response.put("message", "El proveedor ha sido creado con éxito!");
         response.put("product", newProvider);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 

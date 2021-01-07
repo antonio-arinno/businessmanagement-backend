@@ -70,16 +70,6 @@ public class OrderRestController {
         return orderService.findByCompany(pageable, util.getCompany(authentication));
     }
 
-/*
-   @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/customers/page/{page}")
-    public Page<Customer> getCustomers(@PathVariable Integer page, Authentication authentication){
-        Pageable pageable = PageRequest.of(page, 5);
-        return customerService.findByCompany(pageable, util.getCompany(authentication));
-    }
-
- */
-
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/orders/load-product/{term}")

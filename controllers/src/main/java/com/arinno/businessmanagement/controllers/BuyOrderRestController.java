@@ -155,6 +155,13 @@ public class BuyOrderRestController {
 
         BuyOrder currentBuyOrder = (BuyOrder) responseEntity.getBody();
 
+        if(currentBuyOrder.getInputDate()!=null){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Productos ya recibidos");
+            response.put("message", "Productos ya recibidos "+ currentBuyOrder.getInputDate());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
+
         if (buyOrder.getProvider().getId()==null){
             Map<String, Object> response = new HashMap<>();
             response.put("error", "El Proveedor no puede ser nulo");
@@ -204,7 +211,6 @@ public class BuyOrderRestController {
 
         BuyOrder currentBuyOrder = (BuyOrder) responseEntity.getBody();
 
-
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -226,29 +232,21 @@ public class BuyOrderRestController {
     @PutMapping("/buy-orders/update-store/{id}")
     public ResponseEntity<?> updateStore(@Valid @RequestBody BuyOrder buyOrder, BindingResult result, @PathVariable Long id, Authentication authentication){
 
-        ResponseEntity<?> responseEntity = null;
-        responseEntity = getErrRequestBody(result);
-
-        if(responseEntity.getStatusCode()!=HttpStatus.OK){
-            return responseEntity;
+        if(this.getErrRequestBody(result).getStatusCode()!=HttpStatus.OK){
+            return getErrRequestBody(result);
         }
 
-        responseEntity = this.getBuyOrderOrErr(id, authentication);
-
-        if(responseEntity.getStatusCode()!=HttpStatus.OK){
-            return responseEntity;
+        if(!buyOrder.hasAllLots()){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "No se admiten entregas parciales");
+            response.put("message", "Al menos hay un producto sin Lote");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
-        for (BuyOrderItem item : buyOrder.getItems()) {
-            if(item.getLot()==null){
-                Map<String, Object> response = new HashMap<>();
-                response.put("error", "No se admiten entregas parciales");
-                response.put("message", "Al menos hay un producto sin Lote");
-                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-            }
+        if(this.getBuyOrderOrErr(id, authentication).getStatusCode()!=HttpStatus.OK){
+            return this.getBuyOrderOrErr(id, authentication);
         }
-
-        BuyOrder currentBuyOrder = (BuyOrder) responseEntity.getBody();
+        BuyOrder currentBuyOrder = (BuyOrder) this.getBuyOrderOrErr(id, authentication).getBody();
 
         if(currentBuyOrder.getInputDate()!=null){
             Map<String, Object> response = new HashMap<>();

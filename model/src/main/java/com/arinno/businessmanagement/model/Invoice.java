@@ -112,7 +112,7 @@ public class Invoice implements Serializable {
     public void setCompany(Company company) {
         this.company = company;
     }
-
+/*
     public Double getTotal(){
         Double total = 0.00;
         for(Order item: items){
@@ -121,7 +121,7 @@ public class Invoice implements Serializable {
         }
         return total;
     }
-
+*/
     public Double getTotal(IvaType ivaType){
         Double total = 0.00;
         for(Order item: items){

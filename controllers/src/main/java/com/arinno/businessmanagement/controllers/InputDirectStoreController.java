@@ -1,10 +1,9 @@
 package com.arinno.businessmanagement.controllers;
 
 
-import com.arinno.businessmanagement.model.Company;
-import com.arinno.businessmanagement.model.InputDirectStore;
-import com.arinno.businessmanagement.model.Product;
+import com.arinno.businessmanagement.model.*;
 import com.arinno.businessmanagement.services.IInputDirectStoreService;
+import com.arinno.businessmanagement.services.IProductLotService;
 import com.arinno.businessmanagement.services.IProductService;
 import com.arinno.businessmanagement.util.IUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,9 @@ public class InputDirectStoreController {
     @Autowired
     private IUtil util;
 
+    @Autowired
+    private IProductLotService productLotService;
+
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/inputs-directs-store/page/{page}")
     public Page<InputDirectStore> getInputsDirectsStore(@PathVariable Integer page, Authentication authentication){
@@ -56,9 +58,10 @@ public class InputDirectStoreController {
             return responseEntity;
         }
 
+        Company company = util.getCompany(authentication);
         Map<String, Object> response = new HashMap<>();
         InputDirectStore  newInputDirectStore = null;
-        inputDirectStore.setCompany(util.getCompany(authentication));
+        inputDirectStore.setCompany(company);
 
         try {
             newInputDirectStore = inputDirectStoreService.save(inputDirectStore);
@@ -68,10 +71,39 @@ public class InputDirectStoreController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        ProductLot productLot = null;
+        productLot = productLotService.findByProductAndLotAndCompany
+                (inputDirectStore.getProduct(), inputDirectStore.getLot(), company);
         response.put("title", "Nueva entrada en almacen");
-        response.put("message", "Nueva entrada en almacen");
+        if (productLot==null){
+            productLot = new ProductLot();
+            productLot.setProduct(inputDirectStore.getProduct());
+            productLot.setLot(inputDirectStore.getLot());
+            productLot.setStock(inputDirectStore.getQuantity());
+            productLot.setCompany(company);
+            productLotService.save(productLot);
+            response.put("message", getTestNegative(inputDirectStore.getQuantity()));
+        }else {
+            Integer quantity = productLot.getStock() + inputDirectStore.getQuantity();
+            if(quantity==0){
+                productLotService.deleteById(productLot.getId());
+                response.put("message", "Almacen actualizado");
+            }else{
+                productLot.setStock(quantity);
+                productLotService.save(productLot);
+                response.put("message", getTestNegative(quantity));
+            }
+        }
+
         response.put("inputDirectStore", newInputDirectStore);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+    }
+
+    private String getTestNegative(Integer quantity) {
+        if(quantity<0) {
+            return "Almacen actualizado, ADVERTENCIA tiene un valor negativo!!!";
+        }
+        return "Almacen actualizado";
     }
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})

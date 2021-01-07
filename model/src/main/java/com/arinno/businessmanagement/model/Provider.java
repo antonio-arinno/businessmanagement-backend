@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -19,6 +21,7 @@ public class Provider {
     @NotNull
     private String code;
 
+    @NotNull
     private String name;
 
     @Embedded
@@ -88,4 +91,21 @@ public class Provider {
                 ", company=" + company +
                 '}';
     }
+
+    public boolean hasIncompleteAddress() {
+        Boolean hasIncompleteAddress = false;
+
+        if(address.getTypeStreet()==null ||
+            address.getStreet()==null ||
+            address.getNumberKm()==null ||
+            address.getTown()==null ||
+            address.getStateProvince()==null ||
+            address.getCountry()==null ||
+            address.getPostalCode()==null){
+            hasIncompleteAddress = true;
+        }
+        return hasIncompleteAddress;
+    }
+
+
 }

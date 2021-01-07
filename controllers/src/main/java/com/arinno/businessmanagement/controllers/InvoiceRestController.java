@@ -10,6 +10,9 @@ import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,6 +73,14 @@ public class InvoiceRestController {
     public List<Invoice> getInvoices(Authentication authentication){
         return invoiceService.findByCompany(util.getCompany(authentication));
     }
+
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
+    @GetMapping("/invoices/page/{page}")
+    public Page<Invoice> getInvoices(@PathVariable Integer page, Authentication authentication){
+        Pageable pageable = PageRequest.of(page, 5);
+        return invoiceService.findByCompany(pageable, util.getCompany(authentication));
+    }
+
 
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @DeleteMapping("/invoices/{id}")
@@ -409,7 +420,6 @@ public class InvoiceRestController {
 
         Invoice invoice = null;
         Company company = util.getCompany(authentication);
-//        Company company = userModelService.findByUsername(authentication.getName()).getCompany();
 
         try {
             invoice = invoiceService.findByIdAndCompany(id, company);

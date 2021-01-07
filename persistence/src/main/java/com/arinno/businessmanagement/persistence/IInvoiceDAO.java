@@ -2,6 +2,8 @@ package com.arinno.businessmanagement.persistence;
 
 import com.arinno.businessmanagement.model.Company;
 import com.arinno.businessmanagement.model.Invoice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -19,6 +21,5 @@ public interface IInvoiceDAO extends CrudRepository<Invoice, Long> {
     @Query("select max(inv.number) + 1 from Invoice inv where inv.company = ?1")
     Long nextInvoiceNumber(Company company);
 
-
-
+    Page<Invoice> findByCompany(Pageable pageable, Company company);
 }

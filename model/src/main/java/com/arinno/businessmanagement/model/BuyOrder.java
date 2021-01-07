@@ -31,8 +31,6 @@ public class BuyOrder {
     @Temporal(TemporalType.DATE)
     private Date inputDate;
 
-
-
     @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch=FetchType.LAZY)
@@ -158,6 +156,17 @@ public class BuyOrder {
             }
         }
         return hasIvaType;
+    }
+
+    public boolean hasAllLots(){
+        Boolean hasAllLots = true;
+        for(BuyOrderItem item: items) {
+            if (item.getLot() == null) {
+                hasAllLots = false;
+                break;
+            }
+        }
+        return hasAllLots;
     }
 
     @Override

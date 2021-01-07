@@ -131,4 +131,18 @@ public class Customer implements Serializable {
                 ", invoices=" + invoices +
                 '}';
     }
+
+    public boolean hasIncompleteAddress() {
+        Boolean hasIncompleteAddress = false;
+        if(address.getTypeStreet()==null ||
+                address.getStreet()==null ||
+                address.getNumberKm()==null ||
+                address.getTown()==null ||
+                address.getStateProvince()==null ||
+                address.getCountry()==null ||
+                address.getPostalCode()==null){
+            hasIncompleteAddress = true;
+        }
+        return hasIncompleteAddress;
+    }
 }

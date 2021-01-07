@@ -192,9 +192,8 @@ public class ExternalDataRestController {
                 Product product = new Product();
                 product.setCompany(company);
                 product.setCreateAt(new Date());
-                product.setIvaType(IvaType.GENERAL);
+                product.setIvaType(IvaType.REDUCED());
                 product.setProvider(provider);
-
 
                 int cellIdx = 0;
                 while (cellsInRow.hasNext()) {
@@ -215,10 +214,14 @@ public class ExternalDataRestController {
                             break;
 
                         case 3:
-                            product.setSalePrice(currentCell.getNumericCellValue());
+                            product.setBuyPrice(currentCell.getNumericCellValue());
                             break;
 
                         case 4:
+                            product.setSalePrice(currentCell.getNumericCellValue());
+                            break;
+
+                        case 5:
                             if(currentCell.getNumericCellValue()==0){
                                 product.setIvaType(IvaType.GENERAL);
                             }else{

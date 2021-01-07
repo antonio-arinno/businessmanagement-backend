@@ -100,6 +100,13 @@ public class CustomerRestController {
             return responseEntity;
         }
 
+        if(customer.hasIncompleteAddress()){
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Direccion incompleta");
+            response.put("message", "Tipo de Calle, Calle, Numero, Ciudad, Provincia, Pais, Codigo Postal");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
+
         Map<String, Object> response = new HashMap<>();
         Customer newCustomer = new Customer();
         newCustomer.setAddress(new Address());
